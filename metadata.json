@@ -1,0 +1,6 @@
+{
+  "name": "MK Labs — Internet Projects Studio",
+  "description": "MK Labs is an independent internet projects studio exploring ideas and building useful tools, websites, and digital experiences.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
