@@ -1,0 +1,1625 @@
+# MK LABS — COMPLETE DIGITAL PRODUCTS STORE & ADMIN MANAGEMENT SYSTEM
+
+## PROJECT OBJECTIVE
+
+Build a complete, production-minded Digital Products Store and Admin Management System for the existing MK Labs website.
+
+This must be a fully functional implementation, NOT a UI-only mockup, prototype, or collection of placeholder screens.
+
+The system must allow the MK Labs administrator to:
+- Create, edit, duplicate, publish, unpublish, archive, and delete digital products.
+- Upload one ZIP bundle per product.
+- Upload multiple individual files under one product.
+- Use BOTH ZIP uploads and individual file uploads together in the same product.
+- Upload product cover images and gallery images separately from downloadable files.
+- Organize products using categories and tags.
+- Manage free, paid-catalogue, external-link, and coming-soon products.
+- Manage customers and their download permissions.
+- Track product downloads and basic store activity.
+- Manage public store content and settings.
+
+The public website must allow visitors to:
+- Browse the digital product catalogue.
+- Search, filter, and sort products.
+- View detailed product pages.
+- See product descriptions, previews, included files, formats, and other information.
+- Download products that are configured as free.
+- Access external resources when a product uses an external link.
+- See a clear notice when a product is listed as paid but purchasing is not yet available.
+
+## CRITICAL PROJECT RULES
+
+1. First inspect the existing project, its source code, framework, routing, components, styling, configuration, and deployment setup.
+2. Extend the existing MK Labs website. Do not unnecessarily rebuild or replace it.
+3. Preserve all existing pages, sections, content, branding, product links, and working functionality.
+4. Preserve the existing product showcase and its external application links.
+5. Keep existing FileBatch, Mekit, ImgKit, and Certificate Studio links working.
+6. Do not break the existing responsive layout, navigation, contact section, or footer.
+7. Follow the existing project's framework and coding conventions. Do not migrate to another framework without a strong technical reason.
+8. Use reusable components, clean architecture, TypeScript where applicable, and centralized configuration.
+9. Do not create fake functionality, fake statistics, fake customer records, fake downloads, fake reviews, fake orders, or fake revenue.
+10. Every visible button, form, filter, and admin action must work.
+11. Do not expose secret keys, private storage credentials, service-role keys, or unrestricted database access in frontend code.
+12. Do not implement payment processing, checkout, cart, orders, subscriptions, or payment gateways.
+
+**PAYMENT IS OUT OF SCOPE.** Do not install or integrate Stripe, PayPal, JazzCash, Easypaisa, or any other payment provider. The system may store optional catalogue pricing information for future use, but it must not accept payments or pretend that a purchase has taken place.
+
+---
+
+# PART 1 — BRANDING AND WEBSITE INTEGRATION
+
+Use the existing MK Labs brand identity.
+
+Brand name: MK Labs
+
+Brand positioning: Digital Products, SaaS, AI-Powered Tools, and Practical Digital Solutions.
+
+Design direction:
+- Modern, minimal, professional, and trustworthy.
+- White or off-white backgrounds.
+- Dark navy/charcoal text.
+- Subtle blue accent color.
+- Clean typography.
+- Comfortable whitespace.
+- Subtle borders and shadows.
+- Consistent spacing and rounded corners.
+- Excellent mobile, tablet, and desktop responsiveness.
+- Avoid excessive gradients, unnecessary animations, and overly decorative UI.
+
+Use the existing brand configuration wherever possible. Do not hardcode brand information in multiple components.
+
+Create or extend a centralized configuration file for:
+- Brand name
+- Logo
+- Website name
+- Navigation links
+- Social links
+- Contact email
+- Store settings
+- Public product links
+
+Keep the existing MK Labs website intact.
+
+## Website navigation
+
+Add a Digital Store link to the existing navigation.
+
+Suggested navigation:
+- Home
+- About
+- Products
+- Digital Store
+- What We Do
+- Contact
+
+The existing Products section must continue to showcase MK Labs-developed applications. Digital Store must be a separate destination for downloadable digital products.
+
+Suggested public routes:
+- `/store`
+- `/store/category/:slug`
+- `/store/product/:slug`
+- `/store/search`
+- `/account`
+- `/account/downloads`
+
+Use the project's existing routing system if one is already installed.
+
+---
+
+# PART 2 — PUBLIC DIGITAL STORE
+
+Build a complete public-facing Digital Store.
+
+## 2.1 Store homepage
+
+Create a professional store landing page containing:
+
+1. Store hero section
+   - Heading: "Digital Products That Help You Work Smarter."
+   - Short description explaining that visitors can discover useful templates, tools, documents, and digital resources.
+   - Search field.
+   - Browse Categories button.
+
+2. Featured products
+   - Display products selected as featured by the administrator.
+   - Product image.
+   - Product title.
+   - Short description.
+   - Category.
+   - Product type or access label.
+   - Free or catalogue-only status.
+
+3. Browse by category
+   - Display active categories.
+   - Category image or icon.
+   - Category name.
+   - Product count based on published products.
+
+4. Latest products
+   - Display recently published products.
+
+5. Popular products
+   - Only show products based on genuine download activity.
+   - Do not invent popularity metrics.
+   - Hide this section when there is insufficient real data.
+
+6. Store information section
+   - Explain what customers can find in the store.
+   - Mention supported digital formats.
+   - Include a simple support/contact link.
+
+7. Footer
+   - Keep existing MK Labs branding and website footer consistent.
+
+## 2.2 Product listing page
+
+Create a responsive product catalogue with:
+
+- Product cards.
+- Product thumbnails.
+- Product titles.
+- Short descriptions.
+- Categories.
+- Product formats.
+- Free, paid-catalogue, external-link, or coming-soon labels.
+- Featured labels where applicable.
+- Search.
+- Category filters.
+- Product-type filters.
+- Sorting.
+- Pagination or reliable load-more functionality.
+
+Search must work against relevant product fields such as title, description, category, and tags.
+
+Sorting options:
+- Newest
+- Oldest
+- Alphabetical
+- Most downloaded (only when genuine download data exists)
+
+Filtering must update the displayed results correctly.
+
+Include:
+- Loading states.
+- Empty states.
+- Error states.
+- No-results messages.
+
+## 2.3 Product detail page
+
+Each product must have its own SEO-friendly product detail page.
+
+Display:
+
+- Product title.
+- Main cover image.
+- Additional gallery images.
+- Short description.
+- Full description.
+- Category.
+- Tags.
+- Product status.
+- Product type.
+- File formats.
+- Total number of included downloadable files.
+- Individual file names and file sizes where available.
+- Product preview images.
+- Version information.
+- Last updated date.
+- Usage instructions.
+- License information.
+- Support/contact information.
+- Related products, when relevant.
+
+Include an "Included in this product" section.
+
+For a ZIP bundle, show the bundle name and file size.
+
+For multiple individual files, display the individual file names, formats, and sizes.
+
+For products containing both ZIP bundles and individual files, display both groups separately.
+
+Do not expose private R2 object keys, private storage URLs, internal database IDs, or storage credentials on public pages.
+
+## 2.4 Public product access behavior
+
+Support the following product access types:
+
+### A. Free download
+- Display a clear Free label.
+- Display a Download button.
+- If configured for public access, visitors can download without signing in.
+- If configured for account-required access, require customer login.
+- Validate download permissions on the server.
+- Track genuine download events.
+
+### B. Paid catalogue product
+- Display the configured catalogue price if one exists.
+- Display a clear message: "Purchasing is not available yet."
+- Do not display a fake Buy Now, Checkout, or Add to Cart action.
+- Do not grant access automatically.
+- Do not create an order or payment record.
+
+### C. External-link product
+- Display an appropriate button such as "Open Resource".
+- Use only the external URL configured by the administrator.
+- Validate allowed URL schemes.
+- Open external links safely using appropriate browser security attributes.
+
+### D. Coming-soon product
+- Display a Coming Soon label.
+- Do not show a download action.
+- Do not expose unpublished files.
+
+---
+
+# PART 3 — ADMIN DASHBOARD
+
+Build a secure and fully functional administration dashboard.
+
+Suggested route:
+`/admin`
+
+The admin area must be protected. Unauthenticated visitors must not be able to access administrative pages or APIs.
+
+Use a clean dashboard layout with:
+- Sidebar navigation.
+- Top navigation/header.
+- Main content area.
+- Responsive mobile navigation.
+- Profile menu.
+- Logout button.
+- Clear loading and error states.
+
+## 3.1 Admin dashboard overview
+
+Display genuine database-backed statistics:
+
+- Total products.
+- Published products.
+- Draft products.
+- Archived products.
+- Total categories.
+- Total customers.
+- Total successful downloads.
+- Recent product updates.
+- Recent download activity.
+- Recent admin activity.
+
+Rules:
+- All statistics must come from real database queries.
+- Do not hardcode numbers.
+- Do not generate fake activity.
+- Show zero when no records exist.
+- Show an appropriate empty state when data is unavailable.
+
+## 3.2 Product management
+
+Create a complete Products Management page.
+
+Features:
+- View all products.
+- Search products.
+- Filter by category.
+- Filter by status.
+- Filter by product type.
+- Sort products.
+- Pagination.
+- Create product.
+- Edit product.
+- Duplicate product.
+- Preview product.
+- Publish product.
+- Unpublish product.
+- Archive product.
+- Delete product.
+
+Use confirmation dialogs for destructive actions.
+
+Deleting a product must not accidentally delete shared files or files referenced by another product. Implement safe cleanup and reference checks.
+
+Product statuses:
+- Draft
+- Published
+- Archived
+
+Only published products should appear publicly.
+
+## 3.3 Add New Product — complete product form
+
+This is one of the most important parts of the application.
+
+Create a well-organized multi-section product creation form.
+
+### Section A — Basic information
+
+Fields:
+- Product title (required).
+- Slug (auto-generate from title, editable).
+- Short description.
+- Full description.
+- Category (required).
+- Additional categories if supported.
+- Tags.
+- Product type.
+- Product status.
+- Featured product toggle.
+
+Product types:
+- Template
+- PDF
+- eBook
+- Excel / Spreadsheet
+- Word Document
+- Canva Template
+- Notion Template
+- Business Bundle
+- Social Media Kit
+- CV / Resume Template
+- Educational Resource
+- UI Kit
+- Software / Script
+- Other
+
+Allow the administrator to create and manage categories separately.
+
+### Section B — Product images
+
+Allow the administrator to upload:
+- One main cover image.
+- Multiple gallery images.
+- Preview images.
+
+Requirements:
+- Image preview before saving.
+- Image replacement.
+- Image removal.
+- Drag-and-drop upload.
+- File validation.
+- File size validation.
+- Image ordering.
+- Clear upload progress.
+- Responsive image rendering.
+
+Product images must be stored separately from private customer download files.
+
+### Section C — Downloadable files (OPTION C: BOTH UPLOAD METHODS)
+
+The product editor MUST support both of the following methods at the same time.
+
+#### Method 1 — Upload one ZIP bundle
+
+Allow the administrator to upload one or more ZIP files.
+
+Requirements:
+- Drag-and-drop ZIP upload.
+- Browse files option.
+- Upload progress.
+- File size display.
+- File name display.
+- File validation.
+- Upload cancellation where technically possible.
+- Retry failed uploads.
+- Replace an existing ZIP.
+- Remove an uploaded ZIP.
+- Store the ZIP privately.
+- Never make private download files publicly accessible.
+
+Example:
+Product: Business Starter Bundle
+
+Uploaded ZIP:
+`Business-Starter-Bundle.zip`
+
+The customer can download this ZIP as one complete package.
+
+#### Method 2 — Upload multiple individual files
+
+Allow the administrator to select and upload multiple files in one action.
+
+Supported formats should include, where appropriate:
+- PDF
+- DOC
+- DOCX
+- XLS
+- XLSX
+- CSV
+- PPT
+- PPTX
+- ZIP
+- RAR
+- PNG
+- JPG
+- JPEG
+- WEBP
+- SVG
+- TXT
+- MD
+- JSON
+- HTML
+- CSS
+- JS
+- TS
+- Other administrator-approved formats
+
+Do not blindly accept executable or dangerous file types. Apply a configurable allowlist and reject unsafe formats.
+
+For each file, store and display:
+- Original file name.
+- Display name.
+- File format.
+- File size.
+- Storage reference.
+- Upload status.
+- Display order.
+- Optional description.
+- Optional group.
+- Optional required/bonus designation.
+
+The administrator must be able to:
+- Upload multiple files together.
+- Add more files later.
+- Rename the display label without changing the original filename.
+- Reorder files.
+- Remove individual files.
+- Replace an individual file.
+- View upload progress.
+- Retry failed uploads.
+
+Example:
+Product: Professional CV Template Pack
+
+Individual files:
+- Modern-CV.docx
+- Modern-CV.pdf
+- ATS-Friendly-CV.docx
+- Cover-Letter.docx
+- CV-Instructions.pdf
+
+Customers should see a clean "Included Files" list.
+
+#### Method 3 — Use both methods together
+
+A single product must support:
+- One or more ZIP bundles.
+- Multiple individual downloadable files.
+- Bonus files.
+- Separate file groups.
+
+Example:
+Product: Complete Business Starter Kit
+
+ZIP bundle:
+`Complete-Business-Starter-Kit.zip`
+
+Additional individual files:
+- Business-Plan.xlsx
+- Budget-Calculator.xlsx
+- Marketing-Checklist.pdf
+- Business-Profile.docx
+
+The public product page should show:
+- Main ZIP bundle.
+- Additional downloadable files.
+- File names.
+- File formats.
+- File sizes where available.
+
+Do not force the administrator to choose only ZIP or individual files.
+
+#### File groups
+
+Allow the administrator to organize files into groups such as:
+- Main Bundle
+- PDF Documents
+- Excel Templates
+- Word Templates
+- Bonus Resources
+- Instructions
+
+The administrator can create, rename, reorder, and delete groups.
+
+A group can contain one or multiple files.
+
+#### Important file upload behavior
+
+- Files must be uploaded to private Cloudflare R2 storage.
+- Never upload customer download files to a public bucket.
+- Use a secure server-authorized upload process.
+- Store metadata in Supabase.
+- Do not store file binary data directly in Supabase database rows.
+- Never expose R2 secret keys to the browser.
+- Show accurate upload progress and errors.
+- Validate file extensions, MIME types, sizes, and upload permissions on the server.
+- Do not trust client-provided file names, MIME types, or sizes.
+- Generate safe internal object keys.
+- Prevent path traversal and unsafe object key construction.
+- Avoid duplicate uploads where possible.
+- Clean up orphaned storage objects safely.
+- Use a configurable maximum upload size.
+- Support large uploads using a suitable multipart upload strategy if required.
+- If a transfer fails, do not mark the file as successfully uploaded.
+- Do not publish a product while its required file uploads are still pending or failed.
+
+### Section D — External resource links
+
+Some digital products are distributed through external services.
+
+Support:
+- Canva template links.
+- Notion template links.
+- Google Docs links.
+- Google Sheets links.
+- External resource URLs.
+- Other administrator-configured links.
+
+For each external resource:
+- Display name.
+- URL.
+- Optional instructions.
+- Display order.
+
+Validate URL schemes and reject unsafe protocols.
+
+Never automatically expose a private share link on an unpublished product.
+
+### Section E — Product access and catalogue pricing
+
+Fields:
+- Access type.
+- Free or paid-catalogue status.
+- Optional display price.
+- Currency.
+- Download access mode.
+- Login requirement.
+- Download limit, if configured.
+- Optional version number.
+- Optional license information.
+
+Access types:
+- Public free download.
+- Account-required free download.
+- Admin-granted access.
+- Paid catalogue only.
+- External resource.
+- Coming soon.
+
+Important:
+There is NO checkout or payment system.
+
+Paid catalogue products are informational listings only. Do not generate purchase permissions, fake transactions, or fake orders.
+
+### Section F — Product content and SEO
+
+Fields:
+- Product description.
+- Usage instructions.
+- What's included.
+- Requirements.
+- License information.
+- Frequently asked questions (optional).
+- SEO title.
+- SEO description.
+- Social sharing image.
+- Canonical slug.
+
+### Section G — Publish settings
+
+Actions:
+- Save as Draft.
+- Preview.
+- Publish.
+- Schedule publication only if a reliable scheduling backend is implemented.
+- Archive.
+
+Before publishing:
+- Validate required fields.
+- Validate category.
+- Validate product images if required by the product configuration.
+- Validate downloadable file status.
+- Validate external URLs.
+- Prevent publication if required uploads are incomplete.
+- Show understandable validation errors.
+
+---
+
+# PART 4 — CATEGORY AND TAG MANAGEMENT
+
+Build a Categories Management page.
+
+Features:
+- Create category.
+- Edit category.
+- Delete category.
+- Set category name.
+- Set slug.
+- Add description.
+- Upload category image.
+- Set category icon if appropriate.
+- Set display order.
+- Enable/disable category.
+- View the number of published products in each category.
+
+Prevent deletion of categories that are still used by products unless the administrator first reassigns those products or explicitly confirms a safe operation.
+
+Build tag management with:
+- Create tags.
+- Rename tags.
+- Remove unused tags.
+- Assign multiple tags to products.
+
+---
+
+# PART 5 — CUSTOMER ACCOUNTS AND DOWNLOAD HISTORY
+
+Build a customer account system using Supabase Authentication.
+
+Customer features:
+- Register.
+- Sign in.
+- Sign out.
+- Password reset.
+- View account profile.
+- Update basic profile details.
+- View available free downloads.
+- View download history.
+- View previously accessed products.
+- See file names and download dates.
+
+Do not require an account for products configured as public free downloads.
+
+For account-required downloads, validate the user's authenticated identity and access permission on the server.
+
+Customer account pages must not expose:
+- Other customers' personal information.
+- Other customers' download history.
+- Internal storage object keys.
+- Administrative information.
+
+## Admin customer management
+
+Allow administrators to:
+- View customer list.
+- Search customers.
+- View a customer's profile.
+- View that customer's download history.
+- Activate or suspend access where supported.
+- Grant or revoke access to restricted products.
+- Review relevant account activity.
+
+Never expose password hashes, authentication secrets, or private tokens.
+
+Do not allow customers to change their own admin role.
+
+---
+
+# PART 6 — DOWNLOAD MANAGEMENT AND SECURITY
+
+Build a secure download system.
+
+Download process:
+
+1. Visitor clicks Download.
+2. Frontend calls a backend endpoint.
+3. Backend validates the product is published.
+4. Backend validates the requested file belongs to that product.
+5. Backend checks the product's access configuration.
+6. Backend checks customer authentication if required.
+7. Backend checks any configured access permissions and download limits.
+8. Backend records the download event.
+9. Backend generates a short-lived signed download URL or secure download token.
+10. Browser downloads the file.
+
+Security requirements:
+- Private R2 bucket for downloadable files.
+- Short-lived signed download URLs.
+- No permanent public download links.
+- Server-side access validation.
+- Rate limiting.
+- Download abuse protection.
+- Configurable download limits.
+- Expiration of download tokens.
+- Correct content-disposition headers.
+- Safe file names.
+- Access logging.
+- Prevent access to unpublished or archived products.
+- Prevent unauthorized access by guessing file IDs.
+- Validate that a requested file belongs to the requested product.
+- Prevent one customer from accessing another customer's restricted files.
+- Do not trust frontend-only access checks.
+
+For public free downloads, provide a secure public-free access flow that does not require customer login but still validates product publication and file eligibility on the server.
+
+Track:
+- Product ID.
+- File ID.
+- Customer ID when available.
+- Download timestamp.
+- Download outcome.
+- Relevant request metadata where appropriate.
+
+Collect only the information needed for security and analytics. Avoid unnecessary personal data.
+
+---
+
+# PART 7 — ADMIN DOWNLOAD ANALYTICS
+
+Create a Downloads page for administrators.
+
+Display:
+- Total successful downloads.
+- Downloads by product.
+- Downloads by file.
+- Recent downloads.
+- Downloads by date.
+- Customer downloads where a customer account was involved.
+- Failed download attempts where useful.
+
+Provide date filters and product filters.
+
+All figures must be based on genuine recorded events.
+
+Do not count a failed or unauthorized request as a successful download.
+
+Do not claim to know that a visitor completed saving a file if the browser only initiated the download. Label the metric accurately, such as "Download initiated" or "Download authorized."
+
+---
+
+# PART 8 — ACTIVITY LOGS
+
+Create an Admin Activity Log.
+
+Record important administrative actions:
+- Admin login.
+- Product created.
+- Product edited.
+- Product published.
+- Product unpublished.
+- Product archived.
+- Product deleted.
+- Category created or edited.
+- File uploaded.
+- File replaced.
+- File removed.
+- Customer access granted.
+- Customer access revoked.
+- Store settings changed.
+
+Store:
+- Actor ID.
+- Action type.
+- Target type.
+- Target ID.
+- Timestamp.
+- Safe summary of the change.
+
+Do not log passwords, secret keys, signed URLs, or sensitive authentication data.
+
+Allow administrators to filter activity by date, action, and user.
+
+---
+
+# PART 9 — STORE SETTINGS
+
+Create an Admin Store Settings page.
+
+Settings:
+- Store name.
+- Store description.
+- Store logo.
+- Store contact email.
+- Default currency.
+- Default download access behavior.
+- Maximum upload size.
+- Allowed file formats.
+- Default download limit.
+- Signed URL expiry duration.
+- Store visibility.
+- Featured product settings.
+- SEO defaults.
+- Social sharing defaults.
+
+Validate all settings on the backend.
+
+Changing allowed file types or maximum upload size must affect actual server-side validation, not just frontend UI.
+
+Do not put secret credentials in editable public settings.
+
+---
+
+# PART 10 — DATABASE ARCHITECTURE (SUPABASE)
+
+Use Supabase PostgreSQL for structured application data and Supabase Auth for authentication.
+
+Create proper migrations and document all schema changes.
+
+Design a relational database with tables similar to the following. You may improve the schema when justified, but preserve all required functionality.
+
+## 10.1 profiles
+
+Suggested fields:
+- id (references auth.users)
+- full_name
+- avatar_url
+- role
+- account_status
+- created_at
+- updated_at
+
+Roles:
+- admin
+- customer
+
+Admin roles must only be assigned through a secure server-authorized process.
+
+## 10.2 categories
+
+Fields:
+- id
+- name
+- slug
+- description
+- image_url
+- icon
+- display_order
+- is_active
+- created_at
+- updated_at
+
+## 10.3 products
+
+Fields:
+- id
+- title
+- slug
+- short_description
+- description
+- product_type
+- status
+- access_type
+- display_price
+- currency
+- version
+- license_information
+- usage_instructions
+- is_featured
+- seo_title
+- seo_description
+- published_at
+- created_by
+- created_at
+- updated_at
+
+Use proper constraints and indexes.
+
+## 10.4 product_categories
+
+Use a junction table if multiple categories per product are supported.
+
+Fields:
+- product_id
+- category_id
+
+## 10.5 tags
+
+Fields:
+- id
+- name
+- slug
+- created_at
+
+## 10.6 product_tags
+
+Fields:
+- product_id
+- tag_id
+
+## 10.7 product_images
+
+Fields:
+- id
+- product_id
+- image_type
+- storage_key
+- public_url or controlled delivery reference
+- alt_text
+- display_order
+- created_at
+
+Use a safe public delivery approach for public product images. Never use this table to expose private downloadable files.
+
+## 10.8 product_file_groups
+
+Fields:
+- id
+- product_id
+- name
+- description
+- display_order
+- created_at
+- updated_at
+
+## 10.9 product_files
+
+Fields:
+- id
+- product_id
+- group_id
+- display_name
+- original_file_name
+- object_key
+- file_extension
+- mime_type
+- file_size
+- file_type
+- is_required
+- is_bonus
+- display_order
+- upload_status
+- created_at
+- updated_at
+
+File types may include:
+- zip_bundle
+- individual_file
+- bonus_file
+- instruction_file
+
+Keep object keys private and never return them to public clients.
+
+## 10.10 product_external_links
+
+Fields:
+- id
+- product_id
+- display_name
+- url
+- instructions
+- display_order
+- created_at
+
+## 10.11 product_access
+
+Fields:
+- id
+- product_id
+- user_id
+- granted_by
+- access_status
+- expires_at
+- created_at
+- updated_at
+
+Use this for admin-granted access where applicable.
+
+## 10.12 download_events
+
+Fields:
+- id
+- product_id
+- product_file_id
+- user_id (nullable for public downloads)
+- event_status
+- created_at
+- safe request metadata where appropriate
+
+Do not store signed URLs or secret tokens.
+
+## 10.13 admin_activity_logs
+
+Fields:
+- id
+- actor_id
+- action
+- target_type
+- target_id
+- summary
+- created_at
+
+## 10.14 store_settings
+
+Fields:
+- id
+- setting_key
+- setting_value
+- updated_by
+- updated_at
+
+Use safe validation and restrict sensitive settings to authorized administrators.
+
+## 10.15 Optional supporting tables
+
+Add additional tables only when needed for real functionality, such as:
+- product_reviews (only if reviews are actually implemented)
+- upload_sessions (for resumable or multipart uploads)
+- customer_notifications (only if notifications are implemented)
+
+Do not add unused tables simply to make the architecture look larger.
+
+## Database requirements
+
+- Add foreign keys.
+- Add indexes for common filters and lookups.
+- Add unique constraints for slugs and other unique identifiers.
+- Use timestamps consistently.
+- Use transactions for multi-step changes where appropriate.
+- Prevent orphaned product files.
+- Use safe deletion and cleanup logic.
+- Use migrations rather than undocumented manual database changes.
+- Provide seed data only for genuine initial configuration, such as the first administrator bootstrap or optional sample categories. Clearly distinguish any sample data.
+
+---
+
+# PART 11 — ROW LEVEL SECURITY (RLS)
+
+Enable Row Level Security on all tables that contain protected application data.
+
+Policies must ensure:
+
+Public visitors:
+- Can read active categories.
+- Can read published products.
+- Can read public product descriptions and public product image metadata.
+- Cannot read private file object keys.
+- Cannot read customer profiles.
+- Cannot read private download history.
+- Cannot read admin logs.
+- Cannot modify products or categories.
+
+Authenticated customers:
+- Can read and update only their own permitted profile fields.
+- Can read their own download history.
+- Cannot read other customers' records.
+- Cannot grant themselves product access.
+- Cannot change their role.
+- Cannot access admin functions.
+
+Administrators:
+- Can perform authorized management actions.
+- Must be validated through a secure role check.
+- Must not rely only on frontend route protection.
+
+Important:
+Never rely only on hiding admin pages in the frontend. Enforce authorization in the database and backend APIs.
+
+Use the Supabase service role key only in trusted server-side environments. Never put it in a `VITE_` variable or expose it in browser bundles.
+
+---
+
+# PART 12 — CLOUDFLARE R2 STORAGE
+
+Use Cloudflare R2 for digital product files.
+
+Recommended separation:
+
+### Private downloadable files
+Store:
+- ZIP bundles.
+- PDF files.
+- DOCX files.
+- XLSX files.
+- Templates.
+- Other customer download assets.
+
+These must remain private.
+
+### Public product assets
+Store:
+- Cover images.
+- Gallery images.
+- Category images.
+- Public preview images.
+
+Use a public delivery configuration or controlled image delivery system suitable for the existing deployment.
+
+Never mix public product images and private downloadable files in a way that accidentally exposes private content.
+
+## R2 integration
+
+Create a secure backend service for:
+- Creating upload authorization.
+- Validating upload requests.
+- Completing uploads.
+- Verifying uploaded objects.
+- Generating download authorization.
+- Deleting obsolete objects.
+- Handling multipart uploads if implemented.
+
+Use server-side R2 S3-compatible credentials or an appropriate Cloudflare R2 integration.
+
+Never expose:
+- R2 access key ID.
+- R2 secret access key.
+- Private bucket credentials.
+- Supabase service role key.
+- Backend secrets.
+
+Use environment variables and document them.
+
+Suggested environment variables (names may be adapted to the chosen backend):
+
+- SUPABASE_URL
+- SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY (server only)
+- R2_ACCOUNT_ID
+- R2_ACCESS_KEY_ID
+- R2_SECRET_ACCESS_KEY
+- R2_PRIVATE_BUCKET_NAME
+- R2_PUBLIC_BUCKET_NAME (if used)
+- R2_PUBLIC_BASE_URL (if used)
+- APP_BASE_URL
+
+Never commit real secret values to Git.
+
+---
+
+# PART 13 — BACKEND API AND SERVER FUNCTIONS
+
+Use a secure backend appropriate for the existing deployment.
+
+If Cloudflare Workers is the best fit for the current Cloudflare environment, implement the backend using Cloudflare Workers.
+
+Suggested API structure:
+
+### Admin APIs
+- GET `/api/admin/dashboard`
+- GET `/api/admin/products`
+- POST `/api/admin/products`
+- GET `/api/admin/products/:id`
+- PATCH `/api/admin/products/:id`
+- DELETE `/api/admin/products/:id`
+- POST `/api/admin/products/:id/publish`
+- POST `/api/admin/products/:id/archive`
+- POST `/api/admin/products/:id/duplicate`
+- GET `/api/admin/categories`
+- POST `/api/admin/categories`
+- PATCH `/api/admin/categories/:id`
+- DELETE `/api/admin/categories/:id`
+- POST `/api/admin/uploads/authorize`
+- POST `/api/admin/uploads/complete`
+- DELETE `/api/admin/files/:id`
+- GET `/api/admin/downloads`
+- GET `/api/admin/customers`
+- GET `/api/admin/activity`
+- GET `/api/admin/settings`
+- PATCH `/api/admin/settings`
+
+### Public APIs
+- GET `/api/store/products`
+- GET `/api/store/products/:slug`
+- GET `/api/store/categories`
+- GET `/api/store/search`
+
+### Download APIs
+- POST `/api/downloads/authorize`
+- GET or POST `/api/downloads/:token` where appropriate
+
+These are suggested routes. Adapt them to the existing backend conventions.
+
+Every endpoint must:
+- Validate input.
+- Authenticate the user when required.
+- Authorize the action.
+- Validate product/file relationships.
+- Handle errors safely.
+- Return consistent responses.
+- Avoid leaking secrets or internal implementation details.
+
+Implement rate limiting on sensitive operations such as login-related endpoints, upload authorization, and download authorization.
+
+Do not trust client-supplied admin roles, file sizes, MIME types, or product permissions.
+
+---
+
+# PART 14 — ADMIN USER BOOTSTRAP
+
+Implement a safe first-admin setup process.
+
+Requirements:
+- Do not make the first registered user an administrator automatically.
+- Do not expose an admin registration page to the public.
+- Provide a documented secure bootstrap process.
+- Use a server-side script, protected setup command, or manually configured administrator account.
+- Validate the target user's identity before granting the admin role.
+- Prevent unauthorized users from changing their role.
+- Record role changes in the activity log.
+
+After initial setup, the admin should log in through the regular secure login page.
+
+---
+
+# PART 15 — ADMIN USER INTERFACE
+
+Create these admin pages:
+
+1. `/admin/login`
+2. `/admin/dashboard`
+3. `/admin/products`
+4. `/admin/products/new`
+5. `/admin/products/:id/edit`
+6. `/admin/categories`
+7. `/admin/tags`
+8. `/admin/files`
+9. `/admin/downloads`
+10. `/admin/customers`
+11. `/admin/customers/:id`
+12. `/admin/activity`
+13. `/admin/settings`
+14. `/admin/profile`
+
+The admin product editor must be especially polished and easy to use.
+
+Use:
+- Clear labels.
+- Helpful descriptions.
+- Validation messages.
+- Confirmation dialogs.
+- Toast notifications.
+- Loading indicators.
+- Upload progress.
+- Empty states.
+- Error states.
+- Accessible controls.
+- Keyboard-friendly interactions.
+
+For file uploads, show:
+- Pending.
+- Uploading.
+- Completed.
+- Failed.
+- Cancelled.
+
+Never show a file as uploaded when the server has not verified it.
+
+---
+
+# PART 16 — CUSTOMER-FACING DESIGN AND ACCESSIBILITY
+
+The public store must feel like a real professional digital products marketplace.
+
+Requirements:
+- Fully responsive.
+- Fast loading.
+- Good typography.
+- Consistent product cards.
+- Optimized images.
+- Accessible color contrast.
+- Keyboard navigation.
+- Clear focus indicators.
+- Proper form labels.
+- Semantic HTML.
+- Useful error and empty states.
+- No layout overflow on mobile.
+- No broken links.
+- No fake testimonials or invented ratings.
+
+Use a consistent component library or the project's existing design system.
+
+Do not overload pages with too many visual elements.
+
+---
+
+# PART 17 — SEO AND PERFORMANCE
+
+Implement:
+- Unique page titles.
+- Meta descriptions.
+- Canonical URLs.
+- Open Graph metadata.
+- Social sharing images.
+- SEO-friendly slugs.
+- Product structured data only when accurate and appropriate.
+- Sitemap support.
+- Robots configuration.
+- Proper heading hierarchy.
+
+Performance:
+- Lazy-load images where appropriate.
+- Optimize image sizes.
+- Use pagination for large catalogues.
+- Avoid fetching unnecessary private file data.
+- Use database indexes.
+- Avoid repeated queries.
+- Use caching for public catalogue data where safe.
+- Do not cache private customer data or authorization responses publicly.
+
+---
+
+# PART 18 — SECURITY CHECKLIST
+
+Implement and test:
+
+1. Secure authentication.
+2. Server-side authorization.
+3. Supabase RLS.
+4. Private R2 downloads.
+5. Short-lived download authorization.
+6. Secure upload authorization.
+7. File type allowlist.
+8. File size limits.
+9. MIME validation.
+10. Safe object keys.
+11. Protection against path traversal.
+12. Protection against unauthorized file access.
+13. Protection against ID guessing.
+14. Rate limiting.
+15. Input validation.
+16. Output escaping where appropriate.
+17. Safe external links.
+18. Secure HTTP headers where supported.
+19. No secret keys in frontend bundles.
+20. No sensitive information in logs.
+21. Safe account role management.
+22. Secure admin bootstrap.
+23. Safe deletion and orphan cleanup.
+24. Correct CORS configuration.
+25. No public access to private storage buckets.
+
+Do not claim that a security feature is implemented unless it is actually implemented and tested.
+
+---
+
+# PART 19 — ERROR HANDLING AND RELIABILITY
+
+Handle:
+- Database connection failures.
+- Authentication failures.
+- Expired sessions.
+- Unauthorized actions.
+- Failed uploads.
+- Interrupted uploads.
+- Invalid file formats.
+- Files exceeding the maximum size.
+- Missing product files.
+- Expired download tokens.
+- R2 connection errors.
+- Missing product images.
+- Invalid slugs.
+- Duplicate slugs.
+- Network interruptions.
+- Failed product publication.
+
+Show user-friendly messages while keeping technical details in safe server logs.
+
+Do not silently ignore failed operations.
+
+Do not display success notifications before the server confirms success.
+
+---
+
+# PART 20 — TESTING REQUIREMENTS
+
+Create and run tests for important functionality.
+
+## Authentication tests
+- Admin can log in.
+- Customer cannot access admin routes.
+- Unauthenticated visitors cannot access protected routes.
+- Customers cannot change their role.
+- Expired sessions are handled correctly.
+
+## Product management tests
+- Admin can create a product.
+- Admin can edit a product.
+- Admin can duplicate a product.
+- Admin can publish a valid product.
+- Admin cannot publish a product with incomplete required uploads.
+- Unpublished products are not publicly visible.
+- Archived products are not publicly downloadable.
+
+## File upload tests
+- Upload one ZIP file.
+- Upload multiple individual files.
+- Upload ZIP and individual files to the same product.
+- Replace a file.
+- Remove a file.
+- Reject disallowed formats.
+- Reject oversized files.
+- Handle interrupted uploads.
+- Verify uploaded objects exist before marking them complete.
+
+## Download tests
+- Public free product can be downloaded.
+- Account-required product requires authentication.
+- Restricted product rejects unauthorized customers.
+- Expired download authorization is rejected.
+- Unpublished product cannot be downloaded.
+- File IDs cannot be used to access unrelated products.
+- Download events are recorded accurately.
+
+## Public store tests
+- Product listings load.
+- Search works.
+- Filters work.
+- Sorting works.
+- Product detail pages work.
+- External links work.
+- Empty states display correctly.
+- Mobile layout works.
+
+Also run:
+- Type checking.
+- Linting.
+- Production build.
+- Database migration checks.
+- API authorization tests.
+
+Do not finish with unresolved build errors.
+
+---
+
+# PART 21 — DEPLOYMENT AND DOCUMENTATION
+
+Prepare the application for real deployment.
+
+Provide:
+
+1. Database migration files.
+2. Required Supabase SQL setup.
+3. RLS policies.
+4. Cloudflare R2 setup instructions.
+5. Backend deployment instructions.
+6. Frontend environment variable instructions.
+7. Backend secret configuration instructions.
+8. First-admin setup instructions.
+9. Local development instructions.
+10. Production deployment instructions.
+11. Backup and recovery guidance.
+12. File storage cleanup guidance.
+13. Troubleshooting guide.
+
+Create a clear `README.md`.
+
+Create a `.env.example` file with variable names and placeholder values only.
+
+Never place real secrets in `.env.example`, Git commits, documentation, or frontend code.
+
+If the project uses Cloudflare Workers, document:
+- Worker configuration.
+- Required bindings.
+- R2 bucket bindings or S3 credentials.
+- Environment variables.
+- Deployment commands.
+- CORS configuration.
+- Production URL configuration.
+
+---
+
+# PART 22 — IMPLEMENTATION ORDER
+
+Build the system in controlled phases. Do not attempt to create everything as a superficial one-shot UI.
+
+### Phase 1 — Project inspection and architecture
+- Inspect existing project.
+- Understand current stack.
+- Identify existing routes and components.
+- Identify deployment environment.
+- Prepare implementation plan.
+- Preserve existing functionality.
+
+### Phase 2 — Database and security
+- Create Supabase schema.
+- Create migrations.
+- Configure RLS.
+- Implement secure authentication.
+- Implement first-admin bootstrap.
+- Verify authorization.
+
+### Phase 3 — Backend and storage
+- Implement backend API.
+- Connect Cloudflare R2.
+- Implement private uploads.
+- Implement upload verification.
+- Implement secure downloads.
+- Implement safe file cleanup.
+
+### Phase 4 — Admin dashboard
+- Build dashboard.
+- Build product management.
+- Build product creation/editing form.
+- Implement ZIP uploads.
+- Implement multiple individual file uploads.
+- Implement mixed ZIP + individual file uploads.
+- Implement categories and tags.
+- Implement settings.
+
+### Phase 5 — Public digital store
+- Build store homepage.
+- Build product catalogue.
+- Build category pages.
+- Build product detail pages.
+- Implement search and filters.
+- Implement free downloads.
+- Implement paid-catalogue notices.
+- Implement external resource links.
+
+### Phase 6 — Customer accounts and analytics
+- Build customer authentication.
+- Build customer profile.
+- Build download history.
+- Build customer management.
+- Build download analytics.
+- Build activity logs.
+
+### Phase 7 — Testing and deployment
+- Run security tests.
+- Run functionality tests.
+- Fix errors.
+- Run production build.
+- Prepare deployment.
+- Update documentation.
+
+---
+
+# PART 23 — FINAL ACCEPTANCE CRITERIA
+
+The project is complete only when all of the following are true:
+
+1. The existing MK Labs website still works.
+2. Existing product links still work.
+3. A public Digital Store exists.
+4. Product listing and detail pages work.
+5. Admin login works securely.
+6. Unauthorized users cannot access admin functions.
+7. Admin can create and manage products.
+8. Admin can upload a ZIP bundle.
+9. Admin can upload multiple individual files.
+10. Admin can upload ZIP and individual files together in one product.
+11. Admin can organize files into groups.
+12. Admin can upload cover and gallery images.
+13. Files are stored in the correct R2 storage locations.
+14. Private download files are not publicly accessible.
+15. Product metadata is stored in Supabase.
+16. Products can be saved as drafts.
+17. Published products appear in the public store.
+18. Unpublished products remain private.
+19. Free downloads work according to access settings.
+20. Customer login and download history work where required.
+21. Paid products display catalogue information without payment functionality.
+22. External resource links work.
+23. Download tracking uses genuine events.
+24. Admin activity logs record real actions.
+25. Store settings work.
+26. RLS and backend authorization are tested.
+27. Mobile and desktop layouts work.
+28. Production build succeeds.
+29. Documentation is complete.
+30. No fake buttons, fake statistics, or placeholder functionality remain.
+
+---
+
+# FINAL INSTRUCTIONS TO THE CODING AGENT
+
+Before writing code, inspect the existing repository and report:
+- Current framework and version.
+- Existing project structure.
+- Existing routing setup.
+- Current backend integrations.
+- Current Supabase configuration, if any.
+- Current Cloudflare configuration, if any.
+- Existing components that can be reused.
+- Potential compatibility issues.
+
+Then implement the system using the existing architecture.
+
+Do not overwrite working features.
+
+Do not replace the existing website with a new template.
+
+Do not create a fake dashboard.
+
+Do not leave the ZIP upload, multiple-file upload, download authorization, or product CRUD as non-functional demonstrations.
+
+Do not add payment functionality.
+
+If a required external service or credential is missing, implement the integration correctly, provide the exact setup instructions, and clearly identify what needs configuration. Never pretend the integration is live when it is not.
+
+After each phase:
+- Explain what was implemented.
+- List changed files.
+- List database migrations.
+- List environment variables required.
+- Report tests performed.
+- Report any remaining setup required.
+
+Prioritize security, actual functionality, maintainability, and compatibility with the existing MK Labs website.

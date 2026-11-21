@@ -1,211 +1,121 @@
-export interface ProjectItem {
+export interface WebsiteProjectItem {
   id: string;
   name: string;
-  category: string;
-  title: string;
   description: string;
-  features: string[];
+  category: string;
   url: string;
-  visualConcept: string;
-  badge: string;
-  ownership: string;
-  color: string;
-  accentHex: string;
 }
 
-export interface ExperimentItem {
+export interface CapabilityItem {
   id: string;
-  code: string;
-  title: string;
-  category: string;
-  status: 'Exploring' | 'Prototyping' | 'Archived Learning';
-  summary: string;
-  explorationQuestion: string;
-  learnings: string;
-}
-
-export interface ProcessStage {
-  step: string;
   title: string;
   description: string;
-  deliverable: string;
-}
-
-export interface StudioPrinciple {
-  number: string;
-  title: string;
-  statement: string;
-  detail: string;
+  iconName: string;
 }
 
 export const SITE_CONFIG = {
   brand: {
     name: "MK Labs",
-    category: "Internet Projects Studio",
+    positioning: "Digital Products & Technology Studio",
     tagline: "Ideas into Digital Products.",
-    positioning: "MK Labs is an independent studio focused on creating useful internet projects, experimenting with new ideas, and turning concepts into working digital experiences.",
-    coreMessage: "We explore ideas, experiment with technology, and build things for the internet.",
+    description:
+      "MK Labs creates practical digital products, web applications, and modern technology solutions designed to make everyday digital tasks easier.",
+    aboutText:
+      "MK Labs is a digital technology studio focused on developing practical, accessible, and user-friendly digital products. We build tools and web applications that simplify everyday tasks through thoughtful design and modern technology.",
+    heroSupportingText:
+      "MK Labs is an independent digital technology studio focused on creating useful web applications, innovative digital tools, and practical software solutions.",
+    footerDescription:
+      "MK Labs — Ideas into Digital Products. Practical digital products and technology solutions.",
     logoImage: "/assets/aistudio/MK_Labs_703312e1.jpg",
-    statusLabel: "DIGITAL LAB / OPEN TO NEW IDEAS",
-    subLabel: "INDEPENDENT INTERNET PROJECTS STUDIO",
   },
 
+  // Centralized Social & External Destinations
+  social: {
+    linkedin: "https://www.linkedin.com/company/mk-labs-2026",
+  },
+
+  // Centralized Contact Configuration
   contact: {
     email: "muhammadkamran4122@gmail.com",
-    subjectPrefix: "[MK Labs Studio Inquiry]",
-    note: "Direct transmission channel to the MK Labs studio desk. All thoughtful inquiries, technical ideas, and collaboration proposals receive direct response.",
+    subjectPrefix: "[MK Labs Inquiry]",
+    note: "Feel free to reach out directly via email or connect on LinkedIn. We are always open to discussing new ideas, product feedback, and collaboration opportunities.",
   },
 
-  projects: [
+  // Existing MK Labs Web Projects (Displayed in Footer under "Our Products & Websites")
+  websites: [
     {
       id: "filebatch",
       name: "FileBatch",
-      category: "Browser-Based File Tools",
-      title: "FileBatch",
-      description: "A browser-based file conversion tool designed to make everyday file tasks simpler and more accessible.",
-      features: [
-        "File conversion workflows",
-        "Image and PDF-related tools",
-        "Batch-processing experience, where supported",
-        "Local browser-side processing for supported operations",
-      ],
+      category: "Image Conversion",
+      description:
+        "Bulk image conversion and file utility web app.",
       url: "https://filebatch.netlify.app/",
-      visualConcept: "A floating stack of digital files passing through a futuristic conversion portal with subtle transformation sequences.",
-      badge: "LIVE PRODUCT",
-      ownership: "FileBatch is a product by MK Labs.",
-      color: "from-blue-500/20 to-cyan-500/10",
-      accentHex: "#4D8DFF",
     },
     {
       id: "mekit",
-      name: "Mekit.online",
-      category: "Image Utilities",
-      title: "Mekit.online",
-      description: "A collection of practical image tools for resizing, compressing, and preparing images for everyday use.",
-      features: [
-        "Image compression",
-        "Image resizing",
-        "Batch tools where supported",
-        "Simple browser-based workflows",
-      ],
-      url: "https://mekit.online",
-      visualConcept: "Floating image tiles transform between different dimensional proportions with frame-shift animations.",
-      badge: "LIVE PRODUCT",
-      ownership: "Mekit.online is a product by MK Labs.",
-      color: "from-cyan-500/20 to-teal-500/10",
-      accentHex: "#55F2E3",
+      name: "Mekit",
+      category: "Online Tools",
+      description:
+        "Collection of fast browser-based digital utilities.",
+      url: "https://mekit.muhammadkamran4122.workers.dev/",
     },
     {
-      id: "sayhola",
-      name: "SayHola",
-      category: "Online Chat Platform",
-      title: "SayHola",
-      description: "A web-based chat platform designed to make online conversations simple and accessible.",
-      features: [
-        "Browser-based chat experience",
-        "Real-time message updates, where implemented",
-        "Simple interface for connected users",
-      ],
-      url: "https://sayhola.online",
-      visualConcept: "Floating message nodes and connected orbital communication signals pulsating softly.",
-      badge: "LIVE PRODUCT",
-      ownership: "SayHola is a product by MK Labs.",
-      color: "from-indigo-500/20 to-blue-500/10",
-      accentHex: "#6366F1",
+      id: "imgkit",
+      name: "ImgKit",
+      category: "Image Tools",
+      description:
+        "Online image processing and editing utilities.",
+      url: "https://imgkit.muhammadkamran4122.workers.dev/",
     },
-  ] as ProjectItem[],
+    {
+      id: "certificatestudio",
+      name: "Certificate Studio",
+      category: "Certificate Generator",
+      description:
+        "Create, customize, and generate professional certificates.",
+      url: "https://certificatestudio.ai.studio/",
+    },
+  ] as WebsiteProjectItem[],
 
-  processStages: [
+  // What We Do Capabilities
+  capabilities: [
     {
-      step: "01",
-      title: "Discover",
-      description: "We identify a problem, explore an idea, and understand what would make it useful.",
-      deliverable: "Clear friction point and tangible hypothesis",
+      id: "digital-products",
+      title: "Digital Product Development",
+      description:
+        "End-to-end development of practical digital solutions from core concept design to scalable web deployment.",
+      iconName: "Boxes",
     },
     {
-      step: "02",
-      title: "Experiment",
-      description: "We test concepts, explore possible approaches, and learn what works.",
-      deliverable: "Rapid interactive prototypes & browser benchmarks",
+      id: "web-applications",
+      title: "Web Applications",
+      description:
+        "Modern, responsive, and reliable web applications designed for optimum performance, clean architecture, and intuitive user experiences.",
+      iconName: "Layout",
     },
     {
-      step: "03",
-      title: "Build",
-      description: "We turn the strongest ideas into working digital experiences.",
-      deliverable: "Robust, performant production implementation",
+      id: "saas-solutions",
+      title: "SaaS Solutions",
+      description:
+        "Focused software-as-a-service platforms engineered to streamline workflows and solve practical operational challenges.",
+      iconName: "Cloud",
     },
     {
-      step: "04",
-      title: "Improve",
-      description: "We refine the experience, address problems, and keep making it better.",
-      deliverable: "Refinement cycles driven by actual real-world usage",
+      id: "online-tools",
+      title: "Online Tools & Utilities",
+      description:
+        "Fast, accessible, browser-based utilities that eliminate friction and simplify everyday digital and media tasks.",
+      iconName: "Wrench",
     },
-  ] as ProcessStage[],
+  ] as CapabilityItem[],
 
-  principles: [
-    {
-      number: "01",
-      title: "Build With Purpose",
-      statement: "We aim to create things that serve a real use or explore a meaningful idea.",
-      detail: "No gimmicks or bloat. We favor clean utility, fast load times, and tools that genuinely solve a browser task.",
-    },
-    {
-      number: "02",
-      title: "Keep It Accessible",
-      statement: "We value clear interfaces, practical functionality, and accessible experiences.",
-      detail: "Internet software should be immediately usable without steep learning curves, paywalls, or friction.",
-    },
-    {
-      number: "03",
-      title: "Experiment Often",
-      statement: "We learn by exploring ideas, testing approaches, and improving what we build.",
-      detail: "Curiosity is our compass. Testing unorthodox mechanics and architectural ideas keeps software vibrant.",
-    },
-    {
-      number: "04",
-      title: "Keep Improving",
-      statement: "A launch is a beginning, not the end of a product's journey.",
-      detail: "We listen to real behavioral signals, fix edge cases, and continuously polish usability over time.",
-    },
-  ] as StudioPrinciple[],
-
-  experiments: [
-    {
-      id: "exp-01",
-      code: "EXP-801",
-      title: "Client-Side WASM Format Transcoding",
-      category: "Local Processing",
-      status: "Exploring",
-      explorationQuestion: "Can multi-megabyte media conversions occur entirely in browser memory with zero server uploads?",
-      learnings: "WebAssembly SIMD enables near-native conversion speeds on typical laptops, radically preserving user privacy.",
-    },
-    {
-      id: "exp-02",
-      code: "EXP-802",
-      title: "Decentralized Ephemeral Peer Sync",
-      category: "Real-Time Mesh",
-      status: "Prototyping",
-      explorationQuestion: "How lightweight can peer-to-peer browser communication become without recurring signaling overhead?",
-      learnings: "WebRTC data channels provide sub-40ms synchronization for concurrent whiteboard and text sessions.",
-    },
-    {
-      id: "exp-03",
-      code: "EXP-803",
-      title: "Canvas Micro-Geometry Rasterizer",
-      category: "Web Graphics",
-      status: "Exploring",
-      explorationQuestion: "How to deliver complex spatial feedback in browsers without heavy 3D engine overhead?",
-      learnings: "Procedural geometry generation in 2D/3D dual pipelines lowers battery consumption by 65%.",
-    },
-  ] as ExperimentItem[],
-
+  // Clean Navigation Structure
   navLinks: [
-    { label: "Home", href: "#hero" },
-    { label: "About", href: "#about" },
-    { label: "Projects", href: "#projects" },
-    { label: "Process", href: "#process" },
-    { label: "Experiments", href: "#experiments" },
-    { label: "Principles", href: "#principles" },
-    { label: "Contact", href: "#contact" },
+    { label: "Home", href: "/#hero" },
+    { label: "Digital Store", href: "/store" },
+    { label: "Blog", href: "/blog" },
+    { label: "About", href: "/#about" },
+    { label: "What We Do", href: "/#capabilities" },
+    { label: "Contact", href: "/#contact" },
   ],
 };

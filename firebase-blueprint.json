@@ -1,0 +1,762 @@
+{
+  "entities": {
+    "Category": {
+      "title": "Store Category",
+      "description": "Top-level digital product category in the MK Labs Digital Store.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9\\-]+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "displayOrder": {
+          "type": "number"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "name", "slug", "description", "displayOrder", "active", "createdAt"]
+    },
+    "Subcategory": {
+      "title": "Store Subcategory",
+      "description": "Child subcategory linked to a parent category.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "categoryId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9\\-]+$"
+        },
+        "displayOrder": {
+          "type": "number"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "categoryId", "name", "slug", "displayOrder", "active", "createdAt"]
+    },
+    "Product": {
+      "title": "Digital Product",
+      "description": "Official MK Labs digital product metadata listing. Deliverable PDFs are held offline by MK Labs and delivered manually via email after payment verification.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9\\-]+$"
+        },
+        "shortDescription": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 10000
+        },
+        "categoryId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "subcategoryId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "coverImagePath": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "coverImageUrl": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "pdfStoragePath": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "originalFileName": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "fileSize": {
+          "type": "number"
+        },
+        "mimeType": {
+          "type": "string",
+          "enum": ["application/pdf"]
+        },
+        "currency": {
+          "type": "string",
+          "enum": ["PKR", "USD"]
+        },
+        "regularPrice": {
+          "type": "number"
+        },
+        "salePrice": {
+          "type": "number"
+        },
+        "features": {
+          "type": "array"
+        },
+        "license": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "tags": {
+          "type": "array"
+        },
+        "featured": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "published", "archived"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "shortDescription",
+        "categoryId",
+        "subcategoryId",
+        "currency",
+        "regularPrice",
+        "featured",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "createdBy"
+      ]
+    },
+    "PrivateProductFile": {
+      "title": "Private Product File",
+      "description": "Legacy deliverable reference metadata. Never publicly readable.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "storagePath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "fileSizeBytes": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "productId", "displayName", "storagePath", "fileSizeBytes", "createdAt"]
+    },
+    "Order": {
+      "title": "Customer Manual Order",
+      "description": "Customer manual order with bank transfer/Easypaisa/JazzCash verification and manual email PDF delivery tracking.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "customerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "customerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "customerEmail": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "customerPhone": {
+          "type": "string",
+          "minLength": 7,
+          "maxLength": 30
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productIds": {
+          "type": "array"
+        },
+        "productName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "quantity": {
+          "type": "number"
+        },
+        "unitPrice": {
+          "type": "number"
+        },
+        "totalAmount": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string",
+          "enum": ["PKR", "USD"]
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["bank_transfer", "easypaisa", "jazzcash", "payoneer"]
+        },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["Pending", "Payment Link Sent", "Submitted", "Paid", "Verified", "Rejected"]
+        },
+        "paymentReference": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "paymentRequestLink": {
+          "type": "string",
+          "maxLength": 500,
+          "pattern": "^https://.+$"
+        },
+        "paymentLinkSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deliveryStatus": {
+          "type": "string",
+          "enum": ["Pending", "Delivered"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "paid", "failed", "refunded"]
+        },
+        "adminNotes": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "submitSecret": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "submitSecretAttempt": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "customerName",
+        "customerEmail",
+        "customerPhone",
+        "productId",
+        "productIds",
+        "productName",
+        "quantity",
+        "unitPrice",
+        "totalAmount",
+        "currency",
+        "paymentMethod",
+        "paymentStatus",
+        "deliveryStatus",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Customer": {
+      "title": "Customer Profile",
+      "description": "Customer account profile containing PII isolated strictly to owner and admins.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "role": {
+          "type": "string",
+          "enum": ["customer"]
+        },
+        "accountStatus": {
+          "type": "string",
+          "enum": ["active", "suspended"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "email", "fullName", "role", "accountStatus", "createdAt", "updatedAt"]
+    },
+    "Coupon": {
+      "title": "Discount Coupon",
+      "description": "Promotional discount code managed exclusively by MK Labs administrators.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40
+        },
+        "discountPercent": {
+          "type": "number"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "code", "discountPercent", "active", "createdAt", "updatedAt"]
+    },
+    "StoreSettings": {
+      "title": "Store Settings",
+      "description": "Global MK Labs Digital Store configuration managed by administrators.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "storeName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "storeDescription": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "defaultCurrency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "isStoreVisible": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "storeName", "defaultCurrency", "isStoreVisible", "updatedAt"]
+    },
+    "PaymentInstructions": {
+      "title": "Manual Payment Instructions",
+      "description": "Publicly readable payment instructions (Bank Transfer, Easypaisa, JazzCash) managed by administrators.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["payment_instructions"]
+        },
+        "bankTransfer": {
+          "type": "object"
+        },
+        "easypaisa": {
+          "type": "object"
+        },
+        "jazzcash": {
+          "type": "object"
+        },
+        "generalInstructions": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "supportEmail": {
+          "type": "string",
+          "maxLength": 254
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "bankTransfer", "easypaisa", "jazzcash", "updatedAt"]
+    },
+    "AdminUser": {
+      "title": "Admin Authorization Record",
+      "description": "Authoritative RBAC document allowing a verified user UID administrative store privileges.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "BlogPost": {
+      "title": "Blog Article",
+      "description": "MK Labs editorial blog post stored in Firestore. Only published posts are publicly readable; drafts and writes are restricted strictly to authorized admins.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 180
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 180,
+          "pattern": "^[a-z0-9\\-]+$"
+        },
+        "shortDescription": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50000
+        },
+        "coverImageUrl": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "authorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "category": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "tags": {
+          "type": "array"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "published"]
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "slug",
+        "shortDescription",
+        "content",
+        "authorName",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "createdBy"
+      ]
+    },
+    "ProductSales": {
+      "title": "Admin Product Sales Aggregates",
+      "description": "Admin-only exact verified paid sales metrics (unitsSold, paidOrdersCount, lastPaidAt) per productId. Never readable by public visitors or ordinary customers.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "unitsSold": {
+          "type": "number"
+        },
+        "paidOrdersCount": {
+          "type": "number"
+        },
+        "lastPaidAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "productId", "unitsSold", "paidOrdersCount", "updatedAt"]
+    },
+    "ShowcaseRank": {
+      "title": "Public Showcase Ranking Projection",
+      "description": "Minimal public best-seller indicator (rank position and boolean bestSeller flag) without exposing unitsSold, paidOrdersCount, revenue, or PII.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "rank": {
+          "type": "number"
+        },
+        "bestSeller": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "productId", "rank", "bestSeller", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Main store categories. Active categories are publicly readable; writes require admin authorization."
+    },
+    "/subcategories/{subcategoryId}": {
+      "schema": { "$ref": "#/entities/Subcategory" },
+      "description": "Store subcategories belonging to a category. Active subcategories are publicly readable; writes require admin authorization."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Digital store products. Only published products are publicly readable; writes require admin authorization."
+    },
+    "/products/{productId}/privateFiles/{fileId}": {
+      "schema": { "$ref": "#/entities/PrivateProductFile" },
+      "description": "Protected deliverable file metadata. Restricted strictly to admins."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer manual orders isolated by customerId ownership and admin access."
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/Customer" },
+      "description": "Customer PII profiles accessible only to the owning user and admins."
+    },
+    "/coupons/{couponId}": {
+      "schema": { "$ref": "#/entities/Coupon" },
+      "description": "Store discount coupons managed strictly by admins."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/StoreSettings" },
+      "description": "Store configuration and payment_instructions documents managed strictly by admins."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Admin allowlist records checked by security rules."
+    },
+    "/blogs/{blogId}": {
+      "schema": { "$ref": "#/entities/BlogPost" },
+      "description": "MK Labs blog articles. Only published posts are publicly readable; drafts and writes require admin authorization."
+    },
+    "/productSales/{productId}": {
+      "schema": { "$ref": "#/entities/ProductSales" },
+      "description": "Exact verified paid sales aggregates per productId. Readable and writable strictly by admins."
+    },
+    "/showcaseRanks/{productId}": {
+      "schema": { "$ref": "#/entities/ShowcaseRank" },
+      "description": "Minimal public best-seller ranking projection (rank & bestSeller flag only). Readable publicly where bestSeller == true; writable strictly by admins."
+    }
+  }
+}

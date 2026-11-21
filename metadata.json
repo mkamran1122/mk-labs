@@ -1,6 +1,6 @@
 {
-  "name": "MK Labs — Internet Projects Studio",
-  "description": "MK Labs is an independent internet projects studio exploring ideas and building useful tools, websites, and digital experiences.",
+  "name": "MK Labs — Digital Products & Technology Studio",
+  "description": "MK Labs is an independent digital technology studio focused on creating useful web applications, innovative digital tools, and practical software solutions.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

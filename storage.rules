@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Default deny catch-all
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isEmailVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    // Verified MK Labs administrator check (token email must be verified)
+    function isStoreAdmin() {
+      return isEmailVerified() && request.auth.token.email == 'muhammadkamran4122@gmail.com';
+    }
+
+    // Public store preview cover images (only admins can create, replace, or delete)
+    match /public/products/{productId}/{fileName} {
+      allow read: if true;
+      allow create, update: if isStoreAdmin()
+        && isValidId(productId)
+        && fileName.size() >= 3
+        && fileName.size() <= 180
+        && request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|jpg|webp|gif)');
+      allow delete: if isStoreAdmin() && isValidId(productId);
+    }
+
+    // Private deliverable PDFs: strictly private/products/{productId}/original.pdf
+    // Public visitors and regular customers must NEVER read or download directly in Phase 2.
+    match /private/products/{productId}/{fileName} {
+      allow read: if isStoreAdmin() && isValidId(productId);
+      allow create, update: if isStoreAdmin()
+        && isValidId(productId)
+        && fileName == 'original.pdf'
+        && request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= 20 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+      allow delete: if isStoreAdmin() && isValidId(productId);
+    }
+  }
+}
