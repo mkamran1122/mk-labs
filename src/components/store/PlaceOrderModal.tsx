@@ -217,22 +217,26 @@ export const PlaceOrderModal: React.FC<PlaceOrderModalProps> = ({
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-9 h-9 rounded border border-slate-200 bg-white flex items-center justify-center shrink-0 overflow-hidden text-blue-600">
-                        {product.coverImageUrl &&
-                        !failedThumbIds[product.id] ? (
-                          <img
-                            src={product.coverImageUrl}
-                            alt={product.name}
-                            onError={() =>
-                              setFailedThumbIds((prev) => ({
-                                ...prev,
-                                [product.id]: true,
-                              }))
-                            }
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <FileText className="w-4 h-4" />
-                        )}
+                        {(() => {
+                          const thumbUrl = (product.coverImageUrl || '').trim();
+                          const thumbKey = `${product.id}:${thumbUrl}`;
+                          return thumbUrl && !failedThumbIds[thumbKey] ? (
+                            <img
+                              src={thumbUrl}
+                              alt={product.name}
+                              referrerPolicy="no-referrer"
+                              onError={() =>
+                                setFailedThumbIds((prev) => ({
+                                  ...prev,
+                                  [thumbKey]: true,
+                                }))
+                              }
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <FileText className="w-4 h-4" />
+                          );
+                        })()}
                       </div>
                       <div className="min-w-0">
                         <div className="font-bold text-slate-900 truncate">

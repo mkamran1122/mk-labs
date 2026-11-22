@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  FileText,
   CheckCircle2,
   Mail,
   ArrowLeft,
@@ -20,6 +19,7 @@ import {
 import { StoreApi } from '../services/api';
 import { useRouter } from '../hooks/useRouter';
 import { PlaceOrderModal } from '../components/store/PlaceOrderModal';
+import { StoreProductPreview } from '../components/store/StoreVisuals';
 
 function toStoreProductRecord(p: DigitalProduct): StoreProductRecord {
   return {
@@ -57,14 +57,12 @@ export const ProductDetailPage: React.FC<{ slug: string }> = ({ slug }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     async function loadProduct() {
       try {
         setIsLoading(true);
         setError(null);
-        setImgError(false);
         const data = await StoreApi.getProductBySlug(slug);
         setProduct(data);
       } catch (err) {
@@ -149,24 +147,11 @@ export const ProductDetailPage: React.FC<{ slug: string }> = ({ slug }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
           {/* Left Column: Cover Image, Description & Features */}
           <div className="lg:col-span-8 space-y-5 sm:space-y-8 min-w-0">
-            <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-xs">
-              <div className="h-56 sm:h-96 bg-slate-100 flex items-center justify-center overflow-hidden relative">
-                {product.coverImage?.publicUrl && !imgError ? (
-                  <img
-                    src={product.coverImage.publicUrl}
-                    alt={product.name}
-                    onError={() => setImgError(true)}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-slate-400">
-                    <FileText className="w-16 h-16 mb-2" />
-                    <span className="text-xs font-medium">
-                      MK Labs Digital PDF Product
-                    </span>
-                  </div>
-                )}
-              </div>
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+              <StoreProductPreview
+                product={productRecord}
+                categoryId={productRecord.categoryId}
+              />
             </div>
 
             <div className="bg-white p-4 sm:p-8 rounded-lg border border-slate-200 shadow-xs space-y-5 sm:space-y-6">

@@ -145,22 +145,26 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/70 flex items-start gap-3"
                     >
                       <div className="w-10 h-10 rounded-md border border-slate-200 bg-white overflow-hidden flex items-center justify-center shrink-0 text-blue-600">
-                        {product.coverImageUrl &&
-                        !failedThumbIds[product.id] ? (
-                          <img
-                            src={product.coverImageUrl}
-                            alt={product.name}
-                            onError={() =>
-                              setFailedThumbIds((prev) => ({
-                                ...prev,
-                                [product.id]: true,
-                              }))
-                            }
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <FileText className="w-4 h-4" />
-                        )}
+                        {(() => {
+                          const thumbUrl = (product.coverImageUrl || '').trim();
+                          const thumbKey = `${product.id}:${thumbUrl}`;
+                          return thumbUrl && !failedThumbIds[thumbKey] ? (
+                            <img
+                              src={thumbUrl}
+                              alt={product.name}
+                              referrerPolicy="no-referrer"
+                              onError={() =>
+                                setFailedThumbIds((prev) => ({
+                                  ...prev,
+                                  [thumbKey]: true,
+                                }))
+                              }
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <FileText className="w-4 h-4" />
+                          );
+                        })()}
                       </div>
 
                       <div className="flex-1 min-w-0">

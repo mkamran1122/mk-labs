@@ -128,9 +128,15 @@ function mapProductDoc(
     categoryId: String(data.categoryId || ''),
     subcategoryId: String(data.subcategoryId || ''),
     coverImagePath:
-      typeof data.coverImagePath === 'string' ? data.coverImagePath : undefined,
+      typeof data.coverImagePath === 'string' && data.coverImagePath.trim()
+        ? data.coverImagePath.trim()
+        : undefined,
     coverImageUrl:
-      typeof data.coverImageUrl === 'string' ? data.coverImageUrl : undefined,
+      typeof data.coverImageUrl === 'string' && data.coverImageUrl.trim()
+        ? data.coverImageUrl.trim()
+        : typeof data.imageUrl === 'string' && data.imageUrl.trim()
+        ? data.imageUrl.trim()
+        : undefined,
     pdfStoragePath:
       typeof data.pdfStoragePath === 'string' ? data.pdfStoragePath : undefined,
     originalFileName:

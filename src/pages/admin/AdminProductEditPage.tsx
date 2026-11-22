@@ -4,10 +4,12 @@ import {
   CheckCircle2,
   FileText,
   AlertCircle,
+  AlertTriangle,
   Image as ImageIcon,
   Check,
   RefreshCw,
   Mail,
+  X,
 } from 'lucide-react';
 import {
   Category,
@@ -21,8 +23,10 @@ import {
   saveProductAdmin,
 } from '../../services/firestoreStore';
 import {
+  detectNonDirectImageUrlHint,
   filterSubcategoriesByCategory,
   sanitizeSlug,
+  validateCoverImageUrl,
   validateProductFormInput,
 } from '../../services/productValidation';
 import { useRouter } from '../../hooks/useRouter';
@@ -60,7 +64,9 @@ export const AdminProductEditPage: React.FC<{ productId?: string }> = ({
 
   // Optional Cover Image URL
   const [coverImageUrl, setCoverImageUrl] = useState('');
-  const [coverPreviewError, setCoverPreviewError] = useState(false);
+  const [coverLoadedKey, setCoverLoadedKey] = useState<string | null>(null);
+  const [coverErrorKey, setCoverErrorKey] = useState<string | null>(null);
+  const [coverRetryNonce, setCoverRetryNonce] = useState(0);
 
   // Optional Local PDF Filename Reminder (for Admin Gmail Delivery — no Storage upload required)
   const [originalFileName, setOriginalFileName] = useState('');
@@ -114,7 +120,10 @@ export const AdminProductEditPage: React.FC<{ productId?: string }> = ({
           setDescription(prod.description || '');
           setCategoryId(prod.categoryId);
           setSubcategoryId(prod.subcategoryId);
-          setCoverImageUrl(prod.coverImageUrl || '');
+          setCoverImageUrl((prod.coverImageUrl || '').trim());
+          setCoverLoadedKey(null);
+          setCoverErrorKey(null);
+          setCoverRetryNonce(0);
           setOriginalFileName(prod.originalFileName || '');
           setCurrency(prod.currency);
           setRegularPriceInput(String(prod.regularPrice));
@@ -169,6 +178,42 @@ export const AdminProductEditPage: React.FC<{ productId?: string }> = ({
       setSubcategoryId(filteredSubcategories[0]?.id || '');
     }
   }, [categoryId, filteredSubcategories, subcategoryId]);
+
+  const trimmedCoverImageUrl = coverImageUrl.trim();
+  const coverSyntaxCheck = useMemo(
+    () => validateCoverImageUrl(trimmedCoverImageUrl),
+    [trimmedCoverImageUrl]
+  );
+  const coverPreviewKey =
+    trimmedCoverImageUrl && coverSyntaxCheck.valid
+      ? `${trimmedCoverImageUrl}::${coverRetryNonce}`
+      : '';
+  const isCoverLoaded =
+    Boolean(coverPreviewKey) && coverLoadedKey === coverPreviewKey;
+  const isCoverLoadError =
+    Boolean(coverPreviewKey) && coverErrorKey === coverPreviewKey;
+  const isCoverLoading =
+    Boolean(coverPreviewKey) && !isCoverLoaded && !isCoverLoadError;
+  const coverNonDirectHint = useMemo(
+    () =>
+      trimmedCoverImageUrl
+        ? detectNonDirectImageUrlHint(trimmedCoverImageUrl)
+        : null,
+    [trimmedCoverImageUrl]
+  );
+
+  const handleClearCoverImage = () => {
+    setCoverImageUrl('');
+    setCoverLoadedKey(null);
+    setCoverErrorKey(null);
+    setCoverRetryNonce(0);
+  };
+
+  const handleRetryCoverPreview = () => {
+    setCoverLoadedKey(null);
+    setCoverErrorKey(null);
+    setCoverRetryNonce((n) => n + 1);
+  };
 
   const handleNameChange = (val: string) => {
     setName(val);
@@ -252,6 +297,7 @@ export const AdminProductEditPage: React.FC<{ productId?: string }> = ({
 
       setStatus(saved.status);
       setSlug(saved.slug);
+      setCoverImageUrl(saved.coverImageUrl || '');
       setSaveSuccessMsg(
         saved.status === 'published'
           ? `Product "${saved.name}" published successfully.`
@@ -461,38 +507,166 @@ export const AdminProductEditPage: React.FC<{ productId?: string }> = ({
 
           {/* Optional Cover Image URL */}
           <div className="pt-3 border-t border-slate-100 space-y-3">
-            <label className="block text-xs font-semibold text-slate-700 uppercase">
-              Cover Image URL (Optional)
-            </label>
-            <div className="flex flex-col sm:flex-row gap-3 items-start">
-              <div className="flex-1 w-full">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label
+                htmlFor="product-cover-image-url"
+                className="block text-xs font-semibold text-slate-700 uppercase"
+              >
+                Cover Image URL (Optional)
+              </label>
+              {coverImageUrl.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearCoverImage}
+                  className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded text-xs font-semibold text-slate-600 hover:text-red-700 hover:bg-red-50 border border-slate-200 transition-colors cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Remove Image</span>
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+              <div className="md:col-span-7 space-y-2">
                 <input
+                  id="product-cover-image-url"
                   type="url"
                   value={coverImageUrl}
                   onChange={(e) => {
                     setCoverImageUrl(e.target.value);
-                    setCoverPreviewError(false);
                   }}
-                  placeholder="https://... (leave blank to use default Digital PDF card preview)"
+                  onBlur={() => {
+                    const trimmed = coverImageUrl.trim();
+                    if (trimmed !== coverImageUrl) {
+                      setCoverImageUrl(trimmed);
+                    }
+                  }}
+                  placeholder="https://cdn.example.com/product-cover.webp"
                   maxLength={1000}
                   className="w-full min-h-[44px] sm:min-h-0 px-3.5 py-2 rounded-md border border-slate-300 text-base sm:text-xs text-slate-900 focus:outline-none focus:border-blue-600"
                 />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Firebase Storage is disabled on the Starter Tier. You may leave this blank or provide a direct public image URL.
+
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Paste a direct public HTTPS image URL (JPG, JPEG, PNG, WEBP, GIF, or public CDN image endpoint). Leave blank to display the default Digital PDF card preview.
                 </p>
+
+                {trimmedCoverImageUrl && !coverSyntaxCheck.valid && (
+                  <div className="p-3 rounded-md bg-red-50 border border-red-200 text-xs text-red-800 flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                    <span className="leading-relaxed">{coverSyntaxCheck.error}</span>
+                  </div>
+                )}
+
+                {coverSyntaxCheck.valid && coverSyntaxCheck.warning && (
+                  <div className="p-3 rounded-md bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <span className="leading-relaxed">{coverSyntaxCheck.warning}</span>
+                  </div>
+                )}
+
+                {isCoverLoadError && (
+                  <div className="p-3 rounded-md bg-red-50 border border-red-200 text-xs text-red-800 space-y-2">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <div className="space-y-1 leading-relaxed">
+                        <p className="font-semibold text-red-900">
+                          Image failed to load from this URL
+                        </p>
+                        <p>
+                          {coverNonDirectHint ||
+                            'The browser could not load an image from this link. Make sure it is a direct public image file (not a webpage/viewer), allows external embedding/hotlinking without login, and is reachable over HTTPS.'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 pl-6">
+                      <button
+                        type="button"
+                        onClick={handleRetryCoverPreview}
+                        className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded bg-white border border-red-200 text-red-800 hover:bg-red-100 text-[11px] font-semibold cursor-pointer"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Retry Preview</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearCoverImage}
+                        className="inline-flex items-center gap-1 min-h-[36px] sm:min-h-0 px-2.5 py-1 rounded bg-white border border-red-200 text-red-800 hover:bg-red-100 text-[11px] font-semibold cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                        <span>Clear URL</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {isCoverLoaded && (
+                  <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Cover image preview verified</span>
+                  </div>
+                )}
               </div>
-              {coverImageUrl.trim() && !coverPreviewError ? (
-                <img
-                  src={coverImageUrl.trim()}
-                  alt={name || 'Cover preview'}
-                  onError={() => setCoverPreviewError(true)}
-                  className="w-24 h-16 object-cover rounded border border-slate-200 bg-slate-50 shrink-0"
-                />
-              ) : (
-                <div className="w-24 h-16 rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
-                  <ImageIcon className="w-5 h-5" />
+
+              {/* Live Storefront Aspect Preview */}
+              <div className="md:col-span-5">
+                <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
+                  <div className="aspect-[16/10] w-full relative flex items-center justify-center bg-slate-100 overflow-hidden">
+                    {!trimmedCoverImageUrl ? (
+                      <div className="px-4 text-center space-y-1.5 text-slate-400">
+                        <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center mx-auto text-slate-400 shadow-2xs">
+                          <ImageIcon className="w-5 h-5" />
+                        </div>
+                        <p className="text-[11px] font-medium text-slate-500">
+                          No cover image set
+                        </p>
+                      </div>
+                    ) : !coverSyntaxCheck.valid ? (
+                      <div className="px-4 text-center space-y-1.5 text-red-600">
+                        <AlertCircle className="w-6 h-6 mx-auto" />
+                        <p className="text-[11px] font-semibold">
+                          Invalid image URL format
+                        </p>
+                      </div>
+                    ) : isCoverLoadError ? (
+                      <div className="px-4 text-center space-y-1.5 text-red-600">
+                        <AlertCircle className="w-6 h-6 mx-auto" />
+                        <p className="text-[11px] font-semibold">
+                          Preview unavailable
+                        </p>
+                        <p className="text-[10px] text-red-500">
+                          Storefront falls back to Digital PDF placeholder
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <img
+                          key={coverPreviewKey}
+                          src={trimmedCoverImageUrl}
+                          alt={name || 'Product cover preview'}
+                          referrerPolicy="no-referrer"
+                          onLoad={() => setCoverLoadedKey(coverPreviewKey)}
+                          onError={() => setCoverErrorKey(coverPreviewKey)}
+                          className={`w-full h-full object-cover transition-opacity duration-200 ${
+                            isCoverLoaded ? 'opacity-100' : 'opacity-0'
+                          }`}
+                        />
+                        {isCoverLoading && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
+                            <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
+                            <span className="text-[11px] font-medium">
+                              Loading preview...
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <div className="px-3 py-1.5 bg-white border-t border-slate-200 flex items-center justify-between text-[10px] font-medium text-slate-500">
+                    <span>Storefront Cover Preview</span>
+                    <span>16:10</span>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </section>

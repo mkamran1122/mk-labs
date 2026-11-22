@@ -175,6 +175,7 @@ export function validateCoverImageUrl(rawUrl?: string): {
   valid: boolean;
   cleaned?: string;
   error?: string;
+  warning?: string;
 } {
   const trimmed = (rawUrl || '').trim();
   if (!trimmed) {
@@ -184,6 +185,13 @@ export function validateCoverImageUrl(rawUrl?: string): {
     return {
       valid: false,
       error: 'Cover image URL cannot exceed 1,000 characters.',
+    };
+  }
+  if (/\s/.test(trimmed)) {
+    return {
+      valid: false,
+      error:
+        'Cover image URL cannot contain spaces. Remove spaces or encode them as %20.',
     };
   }
   if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
@@ -197,13 +205,61 @@ export function validateCoverImageUrl(rawUrl?: string): {
         error: 'Cover image URL must begin with https://, http://, or /.',
       };
     }
-    return { valid: true, cleaned: trimmed };
+    const hostname = (parsed.hostname || '').toLowerCase();
+    if (!hostname || (!hostname.includes('.') && hostname !== 'localhost')) {
+      return {
+        valid: false,
+        error:
+          'Cover image URL must include a valid domain name (for example, https://cdn.example.com/cover.jpg).',
+      };
+    }
+    const warning =
+      parsed.protocol === 'http:'
+        ? 'This URL uses HTTP instead of HTTPS. Some browsers block insecure HTTP images on HTTPS storefronts — a direct HTTPS image URL is recommended.'
+        : undefined;
+    return { valid: true, cleaned: trimmed, warning };
   } catch {
     return {
       valid: false,
-      error: 'Cover image URL must be a valid https://, http://, or relative / URL.',
+      error:
+        'Enter a valid direct image URL starting with https:// (or http:// / relative / path).',
     };
   }
+}
+
+export function detectNonDirectImageUrlHint(rawUrl: string): string | null {
+  const trimmed = rawUrl.trim();
+  if (!trimmed || trimmed.startsWith('/')) return null;
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.toLowerCase();
+    const path = parsed.pathname.toLowerCase();
+
+    if (host.includes('drive.google.com')) {
+      return 'Google Drive sharing links point to a viewer page or require Drive authentication and usually cannot be embedded directly. Use a direct public HTTPS image host or CDN URL.';
+    }
+    if (host.includes('dropbox.com') && !parsed.searchParams.has('raw')) {
+      return 'Dropbox sharing links (?dl=0) serve a webpage instead of an image file. Use ?raw=1 on a public link or a direct CDN image URL.';
+    }
+    if (
+      (host === 'imgur.com' || host === 'www.imgur.com') &&
+      !path.match(/\.(png|jpe?g|webp|gif)$/i)
+    ) {
+      return 'This looks like an Imgur gallery or post page rather than a direct image file URL (which typically uses i.imgur.com/...).';
+    }
+    if (
+      (host.includes('unsplash.com') && !host.startsWith('images.unsplash.com')) ||
+      (host.includes('pexels.com') && !host.startsWith('images.pexels.com'))
+    ) {
+      return 'This looks like a photo webpage rather than the direct image asset URL (e.g. images.unsplash.com/... or images.pexels.com/...).';
+    }
+    if (host.includes('canva.com') || host.includes('figma.com')) {
+      return 'Design editor links require login and serve web pages rather than direct image files. Export the image and host it on a public HTTPS image CDN.';
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 export interface ProductFormValidationInput {

@@ -311,8 +311,13 @@ export const StoreApi = {
     );
   },
 
+  async getSubcategories(): Promise<StoreSubcategory[]> {
+    return fetchActiveSubcategories();
+  },
+
   async getProducts(params?: {
     category?: string;
+    subcategory?: string;
     search?: string;
     sort?: string;
     limit?: number;
@@ -327,6 +332,7 @@ export const StoreApi = {
     const catById = new Map(categories.map((c) => [c.id, c]));
     const catBySlug = new Map(categories.map((c) => [c.slug, c]));
     const subById = new Map(subs.map((s) => [s.id, s]));
+    const subBySlug = new Map(subs.map((s) => [s.slug, s]));
 
     let filtered = rawProducts.filter((p) => p.status === 'published');
 
@@ -334,6 +340,14 @@ export const StoreApi = {
       const cat = catBySlug.get(params.category) || catById.get(params.category);
       filtered = cat
         ? filtered.filter((p) => p.categoryId === cat.id)
+        : [];
+    }
+
+    if (params?.subcategory) {
+      const sub =
+        subBySlug.get(params.subcategory) || subById.get(params.subcategory);
+      filtered = sub
+        ? filtered.filter((p) => p.subcategoryId === sub.id)
         : [];
     }
 

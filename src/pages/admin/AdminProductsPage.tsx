@@ -412,22 +412,30 @@ export const AdminProductsPage: React.FC = () => {
                   <div key={prod.id} className="p-3.5 space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 rounded border border-slate-200 bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-                        {prod.coverImage?.publicUrl &&
-                        !failedImageIds[prod.id] ? (
-                          <img
-                            src={prod.coverImage.publicUrl}
-                            alt={prod.name}
-                            className="w-full h-full object-cover"
-                            onError={() =>
-                              setFailedImageIds((prev) => ({
-                                ...prev,
-                                [prod.id]: true,
-                              }))
-                            }
-                          />
-                        ) : (
-                          <FileText className="w-4 h-4 text-slate-400" />
-                        )}
+                        {(() => {
+                          const thumbUrl = (
+                            prod.coverImageUrl ||
+                            prod.coverImage?.publicUrl ||
+                            ''
+                          ).trim();
+                          const thumbKey = `${prod.id}:${thumbUrl}`;
+                          return thumbUrl && !failedImageIds[thumbKey] ? (
+                            <img
+                              src={thumbUrl}
+                              alt={prod.name}
+                              referrerPolicy="no-referrer"
+                              className="w-full h-full object-cover"
+                              onError={() =>
+                                setFailedImageIds((prev) => ({
+                                  ...prev,
+                                  [thumbKey]: true,
+                                }))
+                              }
+                            />
+                          ) : (
+                            <FileText className="w-4 h-4 text-slate-400" />
+                          );
+                        })()}
                       </div>
 
                       <div className="min-w-0 flex-1">
@@ -609,22 +617,30 @@ export const AdminProductsPage: React.FC = () => {
                         <td className="px-4 py-3.5 min-w-[230px] max-w-[280px]">
                           <div className="flex items-center gap-3">
                             <div className="w-11 h-11 rounded border border-slate-200 bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-                              {prod.coverImage?.publicUrl &&
-                              !failedImageIds[prod.id] ? (
-                                <img
-                                  src={prod.coverImage.publicUrl}
-                                  alt={prod.name}
-                                  className="w-full h-full object-cover"
-                                  onError={() =>
-                                    setFailedImageIds((prev) => ({
-                                      ...prev,
-                                      [prod.id]: true,
-                                    }))
-                                  }
-                                />
-                              ) : (
-                                <FileText className="w-4 h-4 text-slate-400" />
-                              )}
+                              {(() => {
+                                const thumbUrl = (
+                                  prod.coverImageUrl ||
+                                  prod.coverImage?.publicUrl ||
+                                  ''
+                                ).trim();
+                                const thumbKey = `${prod.id}:${thumbUrl}`;
+                                return thumbUrl && !failedImageIds[thumbKey] ? (
+                                  <img
+                                    src={thumbUrl}
+                                    alt={prod.name}
+                                    referrerPolicy="no-referrer"
+                                    className="w-full h-full object-cover"
+                                    onError={() =>
+                                      setFailedImageIds((prev) => ({
+                                        ...prev,
+                                        [thumbKey]: true,
+                                      }))
+                                    }
+                                  />
+                                ) : (
+                                  <FileText className="w-4 h-4 text-slate-400" />
+                                );
+                              })()}
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">

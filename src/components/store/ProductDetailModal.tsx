@@ -111,7 +111,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
             {/* Preview Media */}
             <div className="lg:col-span-7 rounded-lg border border-slate-200 overflow-hidden bg-slate-50">
-              <StoreProductPreview product={product} />
+              <StoreProductPreview
+                product={product}
+                categoryId={product.categoryId}
+              />
             </div>
 
             {/* Pricing & Action Box */}
