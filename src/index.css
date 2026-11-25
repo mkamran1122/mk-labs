@@ -61,3 +61,133 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
 }
+
+/* Smooth Featured Showcase Carousel Transitions (GPU-composited transform & opacity) */
+@keyframes showcaseEnterNextA {
+  from {
+    opacity: 0;
+    transform: translate3d(32px, 0, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes showcaseEnterNextB {
+  from {
+    opacity: 0;
+    transform: translate3d(32px, 0, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes showcaseEnterPrevA {
+  from {
+    opacity: 0;
+    transform: translate3d(-32px, 0, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes showcaseEnterPrevB {
+  from {
+    opacity: 0;
+    transform: translate3d(-32px, 0, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes showcaseExitNextA {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0) scale(0.988);
+  }
+}
+
+@keyframes showcaseExitNextB {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0) scale(0.988);
+  }
+}
+
+@keyframes showcaseExitPrevA {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0) scale(0.988);
+  }
+}
+
+@keyframes showcaseExitPrevB {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0) scale(0.988);
+  }
+}
+
+.showcase-enter-next-a {
+  animation: showcaseEnterNextA 950ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-enter-next-b {
+  animation: showcaseEnterNextB 950ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-enter-prev-a {
+  animation: showcaseEnterPrevA 950ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-enter-prev-b {
+  animation: showcaseEnterPrevB 950ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-exit-next-a {
+  animation: showcaseExitNextA 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-exit-next-b {
+  animation: showcaseExitNextB 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-exit-prev-a {
+  animation: showcaseExitPrevA 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.showcase-exit-prev-b {
+  animation: showcaseExitPrevB 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+

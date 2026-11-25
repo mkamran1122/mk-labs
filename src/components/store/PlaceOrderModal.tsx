@@ -16,6 +16,7 @@ import {
 } from '../../types/store';
 import { StoreApi } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useCurrency } from '../../context/CurrencyContext';
 import {
   getEffectiveProductPrice,
   formatProductPrice,
@@ -41,6 +42,12 @@ export const PlaceOrderModal: React.FC<PlaceOrderModalProps> = ({
   onOrderCreated,
 }) => {
   const { user } = useAuth();
+  const {
+    selectedCurrency,
+    convertPrice,
+    convertNumericAmount,
+    formatCurrency,
+  } = useCurrency();
 
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -108,6 +115,25 @@ export const PlaceOrderModal: React.FC<PlaceOrderModalProps> = ({
     },
     {}
   );
+
+  const currencyTotalsList = Object.entries(totalsByCurrency);
+  let estimatedDisplayTotal = 0;
+  let allConvertible = currencyTotalsList.length > 0;
+  let anyCurrencyDiffers = false;
+
+  for (const [cur, amt] of currencyTotalsList) {
+    if (cur !== selectedCurrency) {
+      anyCurrencyDiffers = true;
+    }
+    const res = convertNumericAmount(amt, cur);
+    if (cur !== selectedCurrency && !res.converted) {
+      allConvertible = false;
+      break;
+    }
+    estimatedDisplayTotal += res.amount;
+  }
+
+  const showEstimatedTotal = anyCurrencyDiffers && allConvertible;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,6 +236,8 @@ export const PlaceOrderModal: React.FC<PlaceOrderModalProps> = ({
             <div className="space-y-2.5">
               {effectiveItems.map(({ product, quantity }) => {
                 const unitPrice = getEffectiveProductPrice(product);
+                const lineTotal = unitPrice * quantity;
+                const lineConverted = convertPrice(lineTotal, product.currency);
                 return (
                   <div
                     key={product.id}
@@ -248,12 +276,16 @@ export const PlaceOrderModal: React.FC<PlaceOrderModalProps> = ({
                         </div>
                       </div>
                     </div>
-                    <span className="font-bold text-slate-900 shrink-0">
-                      {formatProductPrice(
-                        unitPrice * quantity,
-                        product.currency
+                    <div className="text-right shrink-0">
+                      <span className="font-bold text-slate-900 tabular-nums block">
+                        {formatProductPrice(lineTotal, product.currency)}
+                      </span>
+                      {lineConverted.isConverted && (
+                        <span className="text-[11px] text-slate-500 tabular-nums block">
+                          Est. {lineConverted.formatted}
+                        </span>
                       )}
-                    </span>
+                    </div>
                   </div>
                 );
               })}
@@ -305,18 +337,32 @@ export const PlaceOrderModal: React.FC<PlaceOrderModalProps> = ({
               </div>
             )}
 
-            <div className="pt-2.5 border-t border-slate-200/80 space-y-1">
-              {Object.entries(totalsByCurrency).map(([cur, amt]) => (
+            <div className="pt-2.5 border-t border-slate-200/80 space-y-1.5">
+              {currencyTotalsList.map(([cur, amt]) => (
                 <div
                   key={cur}
                   className="flex items-center justify-between text-sm font-bold text-slate-900"
                 >
                   <span>Total Payable ({cur})</span>
-                  <span className="text-blue-700">
+                  <span className="text-blue-700 tabular-nums">
                     {formatProductPrice(amt, cur)}
                   </span>
                 </div>
               ))}
+
+              {showEstimatedTotal && (
+                <>
+                  <div className="flex items-center justify-between text-xs font-semibold text-slate-700 pt-1">
+                    <span>Estimated Equivalent ({selectedCurrency})</span>
+                    <span className="tabular-nums">
+                      ~ {formatCurrency(estimatedDisplayTotal, selectedCurrency)}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed pt-0.5">
+                    Display currency is an estimate using live FX rates. Your order and manual payment verification remain in the original payable currency shown above.
+                  </p>
+                </>
+              )}
             </div>
           </div>
 

@@ -11,10 +11,10 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { StoreProductRecord, formatFileSize } from '../../types/store';
+import { useCurrency } from '../../context/CurrencyContext';
 import {
   StoreProductPreview,
   getEffectiveProductPrice,
-  formatProductPrice,
 } from './StoreVisuals';
 
 interface ProductDetailModalProps {
@@ -40,6 +40,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onOpenCart,
   onOpenFullPage,
 }) => {
+  const { convertPrice } = useCurrency();
   useEffect(() => {
     if (!product) return;
     const prevOverflow = document.body.style.overflow;
@@ -60,6 +61,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const hasSale =
     typeof product.salePrice === 'number' &&
     product.salePrice < product.regularPrice;
+  const displayEffective = convertPrice(effectivePrice, product.currency);
+  const displayRegular = convertPrice(product.regularPrice, product.currency);
 
   return (
     <div
@@ -124,15 +127,23 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   Price
                 </span>
                 <div className="mt-1.5 flex items-baseline gap-2.5 flex-wrap">
-                  <span className="text-2xl font-bold text-slate-900">
-                    {formatProductPrice(effectivePrice, product.currency)}
+                  <span className="text-2xl font-bold text-slate-900 tabular-nums">
+                    {displayEffective.formatted}
                   </span>
                   {hasSale && (
-                    <span className="text-sm text-slate-400 line-through">
-                      {formatProductPrice(product.regularPrice, product.currency)}
+                    <span className="text-sm text-slate-400 line-through tabular-nums">
+                      {displayRegular.formatted}
                     </span>
                   )}
                 </div>
+                {displayEffective.isConverted && (
+                  <p className="mt-1 text-[11px] text-slate-500 tabular-nums">
+                    Estimated in {displayEffective.currency} · Original:{' '}
+                    <span className="font-semibold text-slate-700">
+                      {displayEffective.originalFormatted}
+                    </span>
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 text-xs text-slate-600 pt-3 border-t border-slate-200/80">

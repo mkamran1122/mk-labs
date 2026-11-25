@@ -27,10 +27,10 @@ import { isFirebaseConfigured } from '../lib/firebase';
 import { fetchPublicStoreSnapshot } from '../services/firestoreStore';
 import { useRouter } from '../hooks/useRouter';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import {
   StoreProductPreview,
   getEffectiveProductPrice,
-  formatProductPrice,
 } from '../components/store/StoreVisuals';
 import { ProductDetailModal } from '../components/store/ProductDetailModal';
 import { CartDrawer, CartEntry } from '../components/store/CartDrawer';
@@ -46,6 +46,7 @@ const CART_STORAGE_KEY = 'mk_labs_store_cart_v1';
 export const StoreHomePage: React.FC = () => {
   const { navigate } = useRouter();
   const { user, isAdmin } = useAuth();
+  const { convertPrice, convertNumericAmount } = useCurrency();
 
   // Firestore Store State
   const [categories, setCategories] = useState<StoreCategory[]>([]);
@@ -208,10 +209,26 @@ export const StoreHomePage: React.FC = () => {
 
     return [...matched].sort((a, b) => {
       if (sortBy === 'price_asc') {
-        return getEffectiveProductPrice(a) - getEffectiveProductPrice(b);
+        const priceA = convertNumericAmount(
+          getEffectiveProductPrice(a),
+          a.currency
+        ).amount;
+        const priceB = convertNumericAmount(
+          getEffectiveProductPrice(b),
+          b.currency
+        ).amount;
+        return priceA - priceB;
       }
       if (sortBy === 'price_desc') {
-        return getEffectiveProductPrice(b) - getEffectiveProductPrice(a);
+        const priceA = convertNumericAmount(
+          getEffectiveProductPrice(a),
+          a.currency
+        ).amount;
+        const priceB = convertNumericAmount(
+          getEffectiveProductPrice(b),
+          b.currency
+        ).amount;
+        return priceB - priceA;
       }
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
@@ -223,6 +240,7 @@ export const StoreHomePage: React.FC = () => {
     selectedCategoryId,
     selectedSubcategoryId,
     sortBy,
+    convertNumericAmount,
   ]);
 
   const isProductInCart = (productId: string) =>
@@ -290,6 +308,8 @@ export const StoreHomePage: React.FC = () => {
     const hasSale =
       typeof product.salePrice === 'number' &&
       product.salePrice < product.regularPrice;
+    const displayEffective = convertPrice(effectivePrice, product.currency);
+    const displayRegular = convertPrice(product.regularPrice, product.currency);
     const inCart = isProductInCart(product.id);
     const category = categoryMap.get(product.categoryId);
     const subcategory = subcategoryMap.get(product.subcategoryId);
@@ -344,13 +364,27 @@ export const StoreHomePage: React.FC = () => {
           </button>
 
           <div className="mt-auto pt-4 border-t border-slate-100 space-y-3">
-            <div className="flex items-baseline gap-2 flex-wrap pt-1">
-              <span className="text-lg font-bold text-slate-900 tabular-nums tracking-tight">
-                {formatProductPrice(effectivePrice, product.currency)}
-              </span>
-              {hasSale && (
-                <span className="text-xs font-medium text-slate-400 line-through tabular-nums">
-                  {formatProductPrice(product.regularPrice, product.currency)}
+            <div className="pt-1">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span
+                  className="text-lg font-bold text-slate-900 tabular-nums tracking-tight"
+                  title={
+                    displayEffective.isConverted
+                      ? `Original price: ${displayEffective.originalFormatted}`
+                      : undefined
+                  }
+                >
+                  {displayEffective.formatted}
+                </span>
+                {hasSale && (
+                  <span className="text-xs font-medium text-slate-400 line-through tabular-nums">
+                    {displayRegular.formatted}
+                  </span>
+                )}
+              </div>
+              {displayEffective.isConverted && (
+                <span className="mt-0.5 block text-[11px] text-slate-500 tabular-nums">
+                  Orig. {displayEffective.originalFormatted}
                 </span>
               )}
             </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrandLogo } from './BrandLogo';
+import { CurrencySelector } from './CurrencySelector';
 import { Menu, X, ShoppingBag, ShieldCheck, User } from 'lucide-react';
 import { useRouter } from '../hooks/useRouter';
 import { useAuth } from '../context/AuthContext';
@@ -15,6 +16,7 @@ export const Navbar: React.FC = () => {
   const isStore = path.startsWith('/store');
   const isBlog = path === '/blog' || path.startsWith('/blog/');
   const isHome = path === '/' || path === '';
+  const isAccount = path === '/account';
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -38,7 +40,8 @@ export const Navbar: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      const totalScrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const totalScrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
       if (totalScrollable > 0) {
         const progress = (window.scrollY / totalScrollable) * 100;
         setScrollProgress(Math.min(100, Math.max(0, progress)));
@@ -76,7 +79,10 @@ export const Navbar: React.FC = () => {
     { label: 'Contact', href: '/#contact', id: 'contact' },
   ];
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
     e.preventDefault();
     setMobileMenuOpen(false);
 
@@ -96,6 +102,10 @@ export const Navbar: React.FC = () => {
       navigate(href);
     }
   };
+
+  const userDisplayName = user
+    ? user.fullName.trim().split(/\s+/)[0] || 'Account'
+    : 'Account';
 
   return (
     <>
@@ -117,13 +127,13 @@ export const Navbar: React.FC = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
           isScrolled
-            ? 'bg-white/95 backdrop-blur-sm border-b border-slate-200/80 shadow-xs py-2.5 md:py-3.5'
-            : 'bg-white/90 backdrop-blur-xs border-b border-slate-100 py-3 md:py-4'
+            ? 'bg-white/95 backdrop-blur-sm border-b border-slate-200/80 shadow-xs py-2'
+            : 'bg-white/92 backdrop-blur-xs border-b border-slate-100 py-2.5'
         }`}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3">
-            {/* Logo */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 xl:px-8">
+          <div className="flex items-center justify-between gap-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-3 xl:gap-8">
+            {/* Left Section: Brand Logo & Studio Subtitle */}
             <a
               href="/"
               onClick={(e) => {
@@ -131,14 +141,17 @@ export const Navbar: React.FC = () => {
                 setMobileMenuOpen(false);
                 navigate('/');
               }}
-              className="focus-visible:ring-2 focus-visible:ring-blue-600 rounded-md min-h-[44px] flex items-center"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded-lg h-10 flex items-center shrink-0"
               aria-label="MK Labs Home"
             >
               <BrandLogo size="md" />
             </a>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-7" aria-label="Main Navigation">
+            {/* Center Section: Single-Line Main Navigation */}
+            <nav
+              className="hidden lg:flex items-center justify-center gap-2.5 xl:gap-6 min-w-0"
+              aria-label="Main Navigation"
+            >
               {navItems.map((item) => {
                 const isStoreLink = item.id === 'store';
                 const isBlogLink = item.id === 'blog';
@@ -153,77 +166,101 @@ export const Navbar: React.FC = () => {
                     key={item.id}
                     href={item.href}
                     onClick={(e) => handleNavClick(e, item.href)}
-                    className={`text-sm font-medium transition-colors py-1 relative ${
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`relative inline-flex items-center h-9 px-1 text-[13px] xl:text-sm font-medium whitespace-nowrap shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded-md ${
                       isActive
-                        ? 'text-blue-600 font-semibold'
+                        ? 'text-blue-600'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     <span>{item.label}</span>
-                    {isStoreLink && (
-                      <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-600 border border-blue-200">
-                        Store
-                      </span>
+                    {isActive && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-1 bottom-0.5 h-[2px] rounded-full bg-blue-600"
+                      />
                     )}
                   </a>
                 );
               })}
             </nav>
 
-            {/* Right Action Menu: Store, Account & Admin */}
-            <div className="hidden md:flex items-center space-x-3">
+            {/* Right Section: Currency, Admin (if authorized), Account & Browse Store */}
+            <div className="hidden lg:flex items-center justify-end gap-1.5 xl:gap-2 shrink-0">
+              <CurrencySelector />
+
               {isAdmin && (
                 <button
+                  type="button"
                   onClick={() => navigate('/admin')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-md transition-colors cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1.5 h-9 px-2 xl:px-2.5 text-xs font-semibold text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                   title="Admin Dashboard"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                   <span>Admin Panel</span>
                 </button>
               )}
 
               <button
+                type="button"
                 onClick={() => navigate('/account')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-md transition-colors cursor-pointer"
+                className={`inline-flex items-center justify-center gap-1.5 h-9 px-2 xl:px-2.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                  isAccount
+                    ? 'text-blue-700 bg-blue-50 border-blue-200'
+                    : 'text-slate-700 bg-slate-50 hover:bg-slate-100 border-slate-200'
+                }`}
                 title="Customer Account"
               >
-                <User className="w-3.5 h-3.5 text-slate-500" />
-                <span>{user ? user.fullName.split(' ')[0] : 'Account'}</span>
+                <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="max-w-[78px] xl:max-w-[100px] truncate">
+                  {userDisplayName}
+                </span>
               </button>
 
               <button
+                type="button"
                 onClick={() => navigate('/store')}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors shadow-xs cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 h-9 px-3.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-xs cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
               >
-                <ShoppingBag className="w-3.5 h-3.5" />
+                <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
                 <span>Browse Store</span>
               </button>
             </div>
 
-            {/* Mobile Hamburger Button */}
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="md:hidden w-11 h-11 flex items-center justify-center rounded-md text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 cursor-pointer shrink-0"
-              aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            {/* Tablet & Mobile Controls: Currency Selector + Hamburger Toggle */}
+            <div className="flex lg:hidden items-center gap-1.5 shrink-0">
+              <CurrencySelector compact />
+
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 cursor-pointer shrink-0"
+                aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Backdrop & Scrollable Navigation Drawer */}
+        {/* Tablet & Mobile Backdrop + Drawer */}
         {mobileMenuOpen && (
           <>
             <div
-              className="fixed inset-x-0 bottom-0 top-[68px] z-40 bg-slate-900/35 backdrop-blur-[1px] md:hidden"
+              className="fixed inset-x-0 top-full h-dvh z-40 bg-slate-900/35 backdrop-blur-[1px] lg:hidden"
               onClick={() => setMobileMenuOpen(false)}
               aria-hidden="true"
             />
-            <div className="relative z-50 md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 shadow-xl max-h-[calc(100dvh-4.25rem)] overflow-y-auto">
-              <nav className="flex flex-col space-y-1" aria-label="Mobile Navigation">
+            <div className="relative z-50 lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 shadow-xl max-h-[calc(100dvh-4rem)] overflow-y-auto">
+              <nav
+                className="max-w-xl mx-auto flex flex-col space-y-1"
+                aria-label="Mobile Navigation"
+              >
                 {navItems.map((item) => {
                   const isStoreLink = item.id === 'store';
                   const isBlogLink = item.id === 'blog';
@@ -237,21 +274,24 @@ export const Navbar: React.FC = () => {
                       key={item.id}
                       href={item.href}
                       onClick={(e) => handleNavClick(e, item.href)}
-                      className={`px-3.5 min-h-[44px] text-sm font-medium rounded-md flex items-center justify-between transition-colors ${
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`px-3.5 min-h-[44px] text-sm font-medium rounded-lg flex items-center justify-between transition-colors ${
                         isActive
                           ? 'bg-blue-50 text-blue-700 font-semibold'
                           : 'text-slate-700 hover:bg-slate-50 active:bg-slate-100'
                       }`}
                     >
                       <span>{item.label}</span>
-                      {isStoreLink && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-700">
-                          Store
-                        </span>
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="w-1.5 h-1.5 rounded-full bg-blue-600"
+                        />
                       )}
                     </a>
                   );
                 })}
+
                 <div className="pt-3 mt-2 border-t border-slate-100 flex flex-col gap-2.5">
                   <button
                     type="button"
@@ -259,34 +299,44 @@ export const Navbar: React.FC = () => {
                       setMobileMenuOpen(false);
                       navigate('/store');
                     }}
-                    className="w-full min-h-[44px] text-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full min-h-[44px] text-center px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>Browse Digital Store</span>
+                    <ShoppingBag className="w-4 h-4 shrink-0" />
+                    <span>Browse Store</span>
                   </button>
-                  <div className="grid grid-cols-2 gap-2">
+
+                  <div
+                    className={`grid gap-2 ${
+                      isAdmin ? 'grid-cols-2' : 'grid-cols-1'
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => {
                         setMobileMenuOpen(false);
                         navigate('/account');
                       }}
-                      className="w-full min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-md cursor-pointer"
+                      className="w-full min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg cursor-pointer"
                     >
-                      <User className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{user ? 'My Account' : 'Account'}</span>
+                      <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span className="truncate">
+                        {user ? userDisplayName : 'Account'}
+                      </span>
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        navigate('/admin');
-                      }}
-                      className="w-full min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-md cursor-pointer"
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Admin</span>
-                    </button>
+
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate('/admin');
+                        }}
+                        className="w-full min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg cursor-pointer"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                        <span>Admin Panel</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </nav>

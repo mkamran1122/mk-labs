@@ -12,12 +12,12 @@ import {
 import {
   DigitalProduct,
   StoreProductRecord,
-  formatProductPrice,
   formatFileSize,
   getEffectiveProductPrice,
 } from '../types/store';
 import { StoreApi } from '../services/api';
 import { useRouter } from '../hooks/useRouter';
+import { useCurrency } from '../context/CurrencyContext';
 import { PlaceOrderModal } from '../components/store/PlaceOrderModal';
 import { StoreProductPreview } from '../components/store/StoreVisuals';
 
@@ -53,6 +53,7 @@ function toStoreProductRecord(p: DigitalProduct): StoreProductRecord {
 
 export const ProductDetailPage: React.FC<{ slug: string }> = ({ slug }) => {
   const { navigate } = useRouter();
+  const { convertPrice } = useCurrency();
   const [product, setProduct] = useState<DigitalProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,6 +116,8 @@ export const ProductDetailPage: React.FC<{ slug: string }> = ({ slug }) => {
     typeof product.salePrice === 'number' &&
     product.salePrice < product.displayPrice;
 
+  const displayEffective = convertPrice(effectivePrice, product.currency);
+  const displayRegular = convertPrice(product.displayPrice, product.currency);
   const productRecord = toStoreProductRecord(product);
 
   return (
@@ -218,15 +221,23 @@ export const ProductDetailPage: React.FC<{ slug: string }> = ({ slug }) => {
                   Price
                 </span>
                 <div className="flex items-baseline gap-2.5 flex-wrap">
-                  <span className="text-2xl font-bold text-slate-900">
-                    {formatProductPrice(effectivePrice, product.currency)}
+                  <span className="text-2xl font-bold text-slate-900 tabular-nums">
+                    {displayEffective.formatted}
                   </span>
                   {hasSale && (
-                    <span className="text-sm text-slate-400 line-through">
-                      {formatProductPrice(product.displayPrice, product.currency)}
+                    <span className="text-sm text-slate-400 line-through tabular-nums">
+                      {displayRegular.formatted}
                     </span>
                   )}
                 </div>
+                {displayEffective.isConverted && (
+                  <p className="mt-1 text-xs text-slate-500 tabular-nums">
+                    Estimated in {displayEffective.currency} · Original price:{' '}
+                    <span className="font-semibold text-slate-700">
+                      {displayEffective.originalFormatted}
+                    </span>
+                  </p>
+                )}
               </div>
 
               <button

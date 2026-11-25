@@ -24,7 +24,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   };
 
   return (
-    <div className={`flex items-center gap-2.5 select-none ${className}`}>
+    <div className={`flex items-center gap-2.5 select-none shrink-0 ${className}`}>
       {/* Brand Icon Mark */}
       <div
         className={`relative ${sizeMap[size]} rounded-md overflow-hidden bg-slate-950 flex items-center justify-center p-0.5 border border-slate-800 shadow-xs shrink-0`}
@@ -38,12 +38,12 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       </div>
 
       {/* Wordmark */}
-      <div className="flex flex-col leading-tight">
-        <span className={`text-slate-900 ${textMap[size].title}`}>
+      <div className="flex flex-col leading-tight whitespace-nowrap shrink-0">
+        <span className={`text-slate-900 whitespace-nowrap ${textMap[size].title}`}>
           MK Labs
         </span>
         {showSubtitle && (
-          <span className={`text-slate-500 font-normal ${textMap[size].sub}`}>
+          <span className={`text-slate-500 font-normal whitespace-nowrap ${textMap[size].sub}`}>
             Technology Studio
           </span>
         )}

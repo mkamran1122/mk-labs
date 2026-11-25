@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider } from './context/AuthContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import { useRouter } from './hooks/useRouter';
 import { Navbar } from './components/Navbar';
 import { DigitalShowcaseBanner } from './components/DigitalShowcaseBanner';
@@ -278,7 +279,9 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <MainRouter />
+        <CurrencyProvider>
+          <MainRouter />
+        </CurrencyProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

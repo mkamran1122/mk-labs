@@ -23,6 +23,7 @@ import {
 } from '../types/store';
 import { StoreApi } from '../services/api';
 import { useRouter } from '../hooks/useRouter';
+import { useCurrency } from '../context/CurrencyContext';
 import {
   formatPaymentMethodLabel,
   isSafeExternalHttpsUrl,
@@ -56,6 +57,12 @@ export const OrderConfirmationPage: React.FC<{ orderId: string }> = ({
   orderId,
 }) => {
   const { navigate, search } = useRouter();
+  const {
+    selectedCurrency,
+    convertPrice,
+    convertNumericAmount,
+    formatCurrency,
+  } = useCurrency();
 
   const [orders, setOrders] = useState<StoreOrderRecord[]>([]);
   const [canSubmitByOrderId, setCanSubmitByOrderId] = useState<
@@ -247,6 +254,25 @@ export const OrderConfirmationPage: React.FC<{ orderId: string }> = ({
     return acc;
   }, {});
 
+  const currencyTotalsList = Object.entries(totalsByCurrency);
+  let estimatedDisplayTotal = 0;
+  let allConvertible = currencyTotalsList.length > 0;
+  let anyCurrencyDiffers = false;
+
+  for (const [cur, amt] of currencyTotalsList) {
+    if (cur !== selectedCurrency) {
+      anyCurrencyDiffers = true;
+    }
+    const res = convertNumericAmount(amt, cur);
+    if (cur !== selectedCurrency && !res.converted) {
+      allConvertible = false;
+      break;
+    }
+    estimatedDisplayTotal += res.amount;
+  }
+
+  const showEstimatedTotal = anyCurrencyDiffers && allConvertible;
+
   const hasConfiguredMethods =
     paymentConfig &&
     (paymentConfig.bankTransfer.enabled ||
@@ -387,50 +413,71 @@ export const OrderConfirmationPage: React.FC<{ orderId: string }> = ({
             </h2>
 
             <div className="divide-y divide-slate-100">
-              {orders.map((ord) => (
-                <div
-                  key={ord.id}
-                  className="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3 text-xs"
-                >
-                  <div className="min-w-0">
-                    <div className="font-bold text-slate-900 text-sm break-words">
-                      {ord.productName}
-                    </div>
-                    <div className="text-slate-500 mt-0.5 break-all">
-                      Order ID: <span className="font-mono">{ord.id}</span> ·
-                      Qty {ord.quantity} ×{' '}
-                      {formatProductPrice(ord.unitPrice, ord.currency)}
-                    </div>
-                    {ord.paymentReference && (
-                      <div className="text-blue-700 mt-1 font-medium break-all">
-                        Reference: {ord.paymentReference}
+              {orders.map((ord) => {
+                const convertedLine = convertPrice(ord.totalAmount, ord.currency);
+                return (
+                  <div
+                    key={ord.id}
+                    className="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3 text-xs"
+                  >
+                    <div className="min-w-0">
+                      <div className="font-bold text-slate-900 text-sm break-words">
+                        {ord.productName}
                       </div>
-                    )}
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="font-bold text-slate-900 text-sm">
-                      {formatProductPrice(ord.totalAmount, ord.currency)}
+                      <div className="text-slate-500 mt-0.5 break-all">
+                        Order ID: <span className="font-mono">{ord.id}</span> ·
+                        Qty {ord.quantity} ×{' '}
+                        {formatProductPrice(ord.unitPrice, ord.currency)}
+                      </div>
+                      {ord.paymentReference && (
+                        <div className="text-blue-700 mt-1 font-medium break-all">
+                          Reference: {ord.paymentReference}
+                        </div>
+                      )}
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">
-                      {formatPaymentMethodLabel(ord.paymentMethod)}
+                    <div className="text-right shrink-0">
+                      <div className="font-bold text-slate-900 text-sm tabular-nums">
+                        {formatProductPrice(ord.totalAmount, ord.currency)}
+                      </div>
+                      {convertedLine.isConverted && (
+                        <div className="text-[11px] text-slate-500 tabular-nums">
+                          Est. {convertedLine.formatted}
+                        </div>
+                      )}
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        {formatPaymentMethodLabel(ord.paymentMethod)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            <div className="pt-3 border-t border-slate-200 space-y-1">
-              {Object.entries(totalsByCurrency).map(([cur, amt]) => (
+            <div className="pt-3 border-t border-slate-200 space-y-1.5">
+              {currencyTotalsList.map(([cur, amt]) => (
                 <div
                   key={cur}
                   className="flex items-center justify-between text-sm font-bold text-slate-900"
                 >
                   <span>Total Amount ({cur})</span>
-                  <span className="text-blue-700">
+                  <span className="text-blue-700 tabular-nums">
                     {formatProductPrice(amt, cur)}
                   </span>
                 </div>
               ))}
+              {showEstimatedTotal && (
+                <>
+                  <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                    <span>Estimated Equivalent ({selectedCurrency})</span>
+                    <span className="tabular-nums">
+                      ~ {formatCurrency(estimatedDisplayTotal, selectedCurrency)}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Please transfer and verify payment in the exact original order currency shown above.
+                  </p>
+                </>
+              )}
             </div>
 
             <div className="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">

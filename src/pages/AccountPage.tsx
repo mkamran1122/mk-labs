@@ -10,6 +10,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { useRouter } from '../hooks/useRouter';
 import { StoreApi } from '../services/api';
 import { isSafeExternalHttpsUrl } from '../services/orderValidation';
@@ -30,6 +31,7 @@ export const AccountPage: React.FC = () => {
     logout,
     isAdmin,
   } = useAuth();
+  const { convertPrice } = useCurrency();
   const { navigate } = useRouter();
 
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -408,7 +410,20 @@ export const AccountPage: React.FC = () => {
                     </div>
                     <div className="font-semibold text-slate-900 break-words">
                       {ord.productName} (Qty {ord.quantity}) ·{' '}
-                      {formatProductPrice(ord.totalAmount, ord.currency)}
+                      <span className="tabular-nums">
+                        {formatProductPrice(ord.totalAmount, ord.currency)}
+                      </span>
+                      {(() => {
+                        const converted = convertPrice(
+                          ord.totalAmount,
+                          ord.currency
+                        );
+                        return converted.isConverted ? (
+                          <span className="ml-1.5 text-[11px] font-normal text-slate-500 tabular-nums">
+                            (Est. {converted.formatted})
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
                     <div className="text-[11px] text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="inline-flex items-center gap-1">

@@ -5,12 +5,12 @@ import {
   Category,
   StoreSubcategory,
   StoreProductRecord,
-  formatProductPrice,
   getEffectiveProductPrice,
 } from '../types/store';
 import { StoreApi } from '../services/api';
 import { StoreProductPreview } from '../components/store/StoreVisuals';
 import { useRouter } from '../hooks/useRouter';
+import { useCurrency } from '../context/CurrencyContext';
 
 type CatalogueSortOption = 'newest' | 'price_asc' | 'price_desc';
 
@@ -48,6 +48,7 @@ export const StoreCataloguePage: React.FC<{ categorySlug?: string }> = ({
   categorySlug,
 }) => {
   const { navigate, search } = useRouter();
+  const { convertPrice, convertNumericAmount } = useCurrency();
 
   const queryParams = new URLSearchParams(search);
   const initialSearch = queryParams.get('q') || '';
@@ -144,36 +145,48 @@ export const StoreCataloguePage: React.FC<{ categorySlug?: string }> = ({
 
   const sortedProducts = useMemo(() => {
     if (sortBy === 'price_asc') {
-      return [...products].sort(
-        (a, b) =>
+      return [...products].sort((a, b) => {
+        const pA = convertNumericAmount(
           getEffectiveProductPrice({
             regularPrice: a.displayPrice,
             salePrice: a.salePrice,
-          }) -
+          }),
+          a.currency
+        ).amount;
+        const pB = convertNumericAmount(
           getEffectiveProductPrice({
             regularPrice: b.displayPrice,
             salePrice: b.salePrice,
-          })
-      );
+          }),
+          b.currency
+        ).amount;
+        return pA - pB;
+      });
     }
     if (sortBy === 'price_desc') {
-      return [...products].sort(
-        (a, b) =>
-          getEffectiveProductPrice({
-            regularPrice: b.displayPrice,
-            salePrice: b.salePrice,
-          }) -
+      return [...products].sort((a, b) => {
+        const pA = convertNumericAmount(
           getEffectiveProductPrice({
             regularPrice: a.displayPrice,
             salePrice: a.salePrice,
-          })
-      );
+          }),
+          a.currency
+        ).amount;
+        const pB = convertNumericAmount(
+          getEffectiveProductPrice({
+            regularPrice: b.displayPrice,
+            salePrice: b.salePrice,
+          }),
+          b.currency
+        ).amount;
+        return pB - pA;
+      });
     }
     return [...products].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-  }, [products, sortBy]);
+  }, [products, sortBy, convertNumericAmount]);
 
   const handleCategoryChange = (nextSlug: string) => {
     setSelectedCategory(nextSlug);
@@ -390,6 +403,14 @@ export const StoreCataloguePage: React.FC<{ categorySlug?: string }> = ({
               const hasSale =
                 typeof prod.salePrice === 'number' &&
                 prod.salePrice < prod.displayPrice;
+              const displayEffective = convertPrice(
+                effectivePrice,
+                prod.currency
+              );
+              const displayRegular = convertPrice(
+                prod.displayPrice,
+                prod.currency
+              );
               const previewRecord = toPreviewRecord(prod);
 
               return (
@@ -433,16 +454,27 @@ export const StoreCataloguePage: React.FC<{ categorySlug?: string }> = ({
                     </p>
 
                     <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                      <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-lg font-bold text-slate-900 tabular-nums tracking-tight">
-                          {formatProductPrice(effectivePrice, prod.currency)}
-                        </span>
-                        {hasSale && (
-                          <span className="text-xs font-medium text-slate-400 line-through tabular-nums">
-                            {formatProductPrice(
-                              prod.displayPrice,
-                              prod.currency
-                            )}
+                      <div className="min-w-0">
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <span
+                            className="text-lg font-bold text-slate-900 tabular-nums tracking-tight"
+                            title={
+                              displayEffective.isConverted
+                                ? `Original price: ${displayEffective.originalFormatted}`
+                                : undefined
+                            }
+                          >
+                            {displayEffective.formatted}
+                          </span>
+                          {hasSale && (
+                            <span className="text-xs font-medium text-slate-400 line-through tabular-nums">
+                              {displayRegular.formatted}
+                            </span>
+                          )}
+                        </div>
+                        {displayEffective.isConverted && (
+                          <span className="mt-0.5 block text-[11px] text-slate-500 tabular-nums">
+                            Orig. {displayEffective.originalFormatted}
                           </span>
                         )}
                       </div>

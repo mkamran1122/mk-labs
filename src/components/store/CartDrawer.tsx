@@ -9,6 +9,7 @@ import {
   Mail,
 } from 'lucide-react';
 import { StoreProductRecord } from '../../types/store';
+import { useCurrency } from '../../context/CurrencyContext';
 import {
   getEffectiveProductPrice,
   formatProductPrice,
@@ -36,6 +37,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onClearCart,
   onProceedToOrder,
 }) => {
+  const {
+    selectedCurrency,
+    convertPrice,
+    convertNumericAmount,
+    formatCurrency,
+  } = useCurrency();
   const [failedThumbIds, setFailedThumbIds] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -64,6 +71,25 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   }, {});
 
   const currencyTotalsList = Object.entries(totalsByCurrency);
+
+  // Compute unified estimated total in selected display currency when applicable
+  let estimatedTotal = 0;
+  let allConvertible = currencyTotalsList.length > 0;
+  let anyCurrencyDiffers = false;
+
+  for (const [cur, amt] of currencyTotalsList) {
+    if (cur !== selectedCurrency) {
+      anyCurrencyDiffers = true;
+    }
+    const res = convertNumericAmount(amt, cur);
+    if (cur !== selectedCurrency && !res.converted) {
+      allConvertible = false;
+      break;
+    }
+    estimatedTotal += res.amount;
+  }
+
+  const showEstimatedTotal = anyCurrencyDiffers && allConvertible;
 
   return (
     <div
@@ -139,6 +165,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="space-y-3">
                 {items.map(({ product, quantity }) => {
                   const unitPrice = getEffectiveProductPrice(product);
+                  const lineTotal = unitPrice * quantity;
+                  const lineConverted = convertPrice(lineTotal, product.currency);
                   return (
                     <div
                       key={product.id}
@@ -194,12 +222,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                             <span>Single License · Qty {quantity}</span>
                           </span>
 
-                          <span className="text-xs font-bold text-slate-900">
-                            {formatProductPrice(
-                              unitPrice * quantity,
-                              product.currency
+                          <div className="text-right">
+                            <span className="text-xs font-bold text-slate-900 tabular-nums block">
+                              {lineConverted.formatted}
+                            </span>
+                            {lineConverted.isConverted && (
+                              <span className="text-[10px] text-slate-500 tabular-nums block">
+                                Orig. {lineConverted.originalFormatted}
+                              </span>
                             )}
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -214,13 +246,31 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         {items.length > 0 && (
           <div className="p-4 sm:p-5 border-t border-slate-200 bg-slate-50 space-y-3.5 sm:space-y-4">
             <div className="space-y-1.5 text-xs">
+              {showEstimatedTotal && (
+                <div className="flex items-center justify-between text-sm font-bold text-slate-900">
+                  <span>Estimated Total ({selectedCurrency})</span>
+                  <span className="text-blue-700 tabular-nums">
+                    {formatCurrency(estimatedTotal, selectedCurrency)}
+                  </span>
+                </div>
+              )}
               {currencyTotalsList.map(([cur, amount]) => (
                 <div
                   key={cur}
-                  className="flex items-center justify-between text-sm font-bold text-slate-900"
+                  className={`flex items-center justify-between ${
+                    showEstimatedTotal
+                      ? 'text-xs font-medium text-slate-600'
+                      : 'text-sm font-bold text-slate-900'
+                  }`}
                 >
-                  <span>Subtotal ({cur})</span>
-                  <span>{formatProductPrice(amount, cur)}</span>
+                  <span>
+                    {showEstimatedTotal
+                      ? `Payable Subtotal (${cur})`
+                      : `Subtotal (${cur})`}
+                  </span>
+                  <span className="tabular-nums">
+                    {formatProductPrice(amount, cur)}
+                  </span>
                 </div>
               ))}
             </div>
